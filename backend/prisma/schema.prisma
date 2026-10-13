@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+// home models
+model Service {
+  id          Int    @id @default(autoincrement())
+  slug        String @unique @db.VarChar(120)
+  title       String @db.VarChar(160)
+  badge       String @db.VarChar(80)
+  description String @db.Text
+  features    Json
+  order       Int    @default(0)
+
+  @@map("services")
+}
+
+model HostingPlan {
+  id           Int     @id @default(autoincrement())
+  slug         String  @unique @db.VarChar(120)
+  name         String  @db.VarChar(150)
+  badge        String? @db.VarChar(100)
+  popular      Boolean @default(false)
+  description  String  @db.VarChar(500)
+  monthlyPrice Decimal @db.Decimal(10, 2)
+  yearlyPrice  Decimal @db.Decimal(10, 2)
+  /// e.g. ["1 Website", "20 GB NVMe SSD", "Unmetered", ...]
+  features     Json
+  ctaText      String  @db.VarChar(100)
+  order        Int     @default(0)
+
+  @@map("hosting_plans")
+}
+
+model Achievement {
+  id     Int    @id @default(autoincrement())
+  slug   String @unique @db.VarChar(120)
+  count  String @db.VarChar(40)
+  label  String @db.VarChar(160)
+  icon   String @db.VarChar(500)
+  order  Int    @default(0)
+
+  @@map("achievements")
+}
+
+model Partner {
+  id    Int    @id @default(autoincrement())
+  title String @db.VarChar(160)
+  image String @db.VarChar(500)
+  order Int    @default(0)
+
+  @@map("partners")
+}
+
+model BlogCategory {
+  id    Int    @id @default(autoincrement())
+  slug  String @unique @db.VarChar(120)
+  title String @db.VarChar(120)
+  blogs Blog[]
+
+  @@map("blog_categories")
+}
+
+model Blog {
+  id         Int          @id @default(autoincrement())
+  slug       String       @unique @db.VarChar(180)
+  title      String       @db.VarChar(255)
+  excerpt    String       @db.Text
+  content    String?      @db.LongText
+  hashtags   Json?
+  categoryId Int
+  category   BlogCategory @relation(fields: [categoryId], references: [id])
+  date       DateTime
+  readTime   String       @db.VarChar(40)
+  author     String       @db.VarChar(120)
+  image      String       @db.VarChar(500)
+  order      Int          @default(0)
+
+  @@index([categoryId])
+  @@map("blogs")
+}
+
+model Testimonial {
+  id       Int     @id @default(autoincrement())
+  name     String  @db.VarChar(120)
+  role     String  @db.VarChar(120)
+  company  String  @db.VarChar(160)
+  content  String  @db.Text
+  rating   Int     @default(5)
+  initials String  @db.VarChar(4)
+  profile  String? @db.VarChar(500)
+  order    Int     @default(0)
+
+  @@map("testimonials")
+}
+
+model Faq {
+  id       Int    @id @default(autoincrement())
+  question String @db.VarChar(500)
+  answer   String @db.Text
+  order    Int    @default(0)
+
+  @@map("faqs")
+}
+
+
+// about models

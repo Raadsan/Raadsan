@@ -1,0 +1,52 @@
+import cors from "cors"
+import express from "express"
+import { prisma } from "../lib/prisma.js"
+import serviceRouter from "./management/home/services/serviceRoute.js"
+import hostingRouter from "./management/home/web-hosting/hostingRoute.js"
+import achievementRouter from "./management/home/achievement/achievementRoute.js"
+import partnerRouter from "./management/home/partner/partnerRoute.js"
+import blogRouter from "./management/home/blog/blogRoute.js"
+import testimonialRouter from "./management/home/testimonials/testimonialRoute.js"
+import faqRouter from "./management/home/faq/faqRoute.js"
+import uploadRouter from "./uploads/uploadRoute.js"
+
+const app = express()
+
+app.use(
+  cors({
+    origin: ["http://localhost:3000"],
+    credentials: true,
+  }),
+)
+app.use(express.json())
+
+app.get("/", (_req, res) => {
+  res.json({
+    name: "Raadsan Teach API",
+    status: "ok",
+  })
+})
+
+app.get("/health", async (_req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`
+    res.json({ status: "ok", database: "connected successfully" })
+  } catch (error) {
+    res.status(503).json({
+      status: "error",
+      database: "disconnected",
+      message: error instanceof Error ? error.message : "Database unavailable",
+    })
+  }
+})
+
+app.use("/api/services", serviceRouter)
+app.use("/api/hosting-plans", hostingRouter)
+app.use("/api/achievements", achievementRouter)
+app.use("/api/partners", partnerRouter)
+app.use("/api/blogs", blogRouter)
+app.use("/api/testimonials", testimonialRouter)
+app.use("/api/faqs", faqRouter)
+app.use("/api/uploads", uploadRouter)
+
+export default app
