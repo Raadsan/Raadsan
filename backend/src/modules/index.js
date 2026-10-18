@@ -8,6 +8,14 @@ import partnerRouter from "./management/home/partner/partnerRoute.js"
 import blogRouter from "./management/home/blog/blogRoute.js"
 import testimonialRouter from "./management/home/testimonials/testimonialRoute.js"
 import faqRouter from "./management/home/faq/faqRoute.js"
+import contactHeroRouter from "./management/contacts/hero/contactHeroRoute.js"
+import contactInformationRouter from "./management/contacts/information/contactInformationRoute.js"
+import contactFormRouter from "./management/contacts/form/contactFormRoute.js"
+import aboutCompanyRouter from "./management/about/company/aboutCompanyRoute.js"
+import aboutVisionMissionRouter from "./management/about/vision-mission/aboutVisionMissionRoute.js"
+import aboutCoreValueRouter from "./management/about/core-values/aboutCoreValueRoute.js"
+import aboutWhyChooseRouter from "./management/about/why-choose/aboutWhyChooseRoute.js"
+import productRouter from "./management/products/productRoute.js"
 import uploadRouter from "./uploads/uploadRoute.js"
 
 const app = express()
@@ -47,6 +55,14 @@ app.use("/api/partners", partnerRouter)
 app.use("/api/blogs", blogRouter)
 app.use("/api/testimonials", testimonialRouter)
 app.use("/api/faqs", faqRouter)
+app.use("/api/contact-hero", contactHeroRouter)
+app.use("/api/contact-information", contactInformationRouter)
+app.use("/api/contact-form", contactFormRouter)
+app.use("/api/about-company", aboutCompanyRouter)
+app.use("/api/about-vision-mission", aboutVisionMissionRouter)
+app.use("/api/about-core-values", aboutCoreValueRouter)
+app.use("/api/about-why-choose", aboutWhyChooseRouter)
+app.use("/api/products", productRouter)
 app.use("/api/uploads", uploadRouter)
 
 export default app

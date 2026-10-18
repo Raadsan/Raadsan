@@ -3,7 +3,6 @@ export type PageModuleKey =
   | "about"
   | "services"
   | "products"
-  | "resources"
   | "contacts"
 
 export type ModuleKey = "main" | "management" | "configuration" | PageModuleKey
@@ -72,11 +71,6 @@ export const pageModules: PageModule[] = [
     title: "About",
     sections: [
       {
-        title: "Hero",
-        slug: "hero",
-        description: "Manage about page hero title and intro text.",
-      },
-      {
         title: "About Company",
         slug: "about-company",
         description: "Manage company story and about image.",
@@ -90,16 +84,6 @@ export const pageModules: PageModule[] = [
         title: "Core Values",
         slug: "core-values",
         description: "Manage core values list.",
-      },
-      {
-        title: "Achievements",
-        slug: "achievements",
-        description: "Manage achievements shown on about page.",
-      },
-      {
-        title: "Partners",
-        slug: "partners",
-        description: "Manage partners shown on about page.",
       },
       {
         title: "Why Choose Us",
@@ -137,34 +121,8 @@ export const pageModules: PageModule[] = [
   {
     key: "products",
     title: "Products",
-    sections: [
-      {
-        title: "E-Commerce System",
-        slug: "ecommerce",
-        description: "Manage ecommerce product page content.",
-      },
-      {
-        title: "Coffee Shop System",
-        slug: "coffee-system",
-        description: "Manage coffee system product page content.",
-      },
-    ],
-  },
-  {
-    key: "resources",
-    title: "Resources",
-    sections: [
-      {
-        title: "Blog",
-        slug: "blog",
-        description: "Manage blog posts and categories.",
-      },
-      {
-        title: "Help Center",
-        slug: "help-center",
-        description: "Manage help center content and links.",
-      },
-    ],
+    // Products are registered via CRUD — no hardcoded section cards
+    sections: [],
   },
   {
     key: "contacts",
@@ -173,17 +131,17 @@ export const pageModules: PageModule[] = [
       {
         title: "Hero",
         slug: "hero",
-        description: "Manage contact page hero content.",
+        description: "Manage contact page hero title and subtitle.",
       },
       {
         title: "Contact Information",
         slug: "contact-information",
-        description: "Manage address, phone, and email details.",
+        description: "Manage email, phone, and office details.",
       },
       {
-        title: "Contact Form",
-        slug: "contact-form",
-        description: "Manage contact form fields and messages.",
+        title: "Messages",
+        slug: "messages",
+        description: "View messages clients send from the contact form.",
       },
     ],
   },

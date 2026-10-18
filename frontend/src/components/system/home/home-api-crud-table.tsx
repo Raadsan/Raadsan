@@ -1,8 +1,23 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useState, type ComponentType } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { IconEye, IconPencil, IconPlus, IconTrash } from "@tabler/icons-react"
+import {
+  Eye,
+  Globe2,
+  HeartHandshake,
+  LifeBuoy,
+  Lightbulb,
+  LockKeyhole,
+  Medal,
+  Settings2,
+  ShieldCheck,
+  Target,
+  Users,
+  Zap,
+  type LucideProps,
+} from "lucide-react"
 import { toast } from "sonner"
 
 import { mediaUrl, uploadsApi } from "@/api/uploads"
@@ -20,16 +35,64 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
+type LucideIcon = ComponentType<LucideProps>
+
+const CRUD_ICON_MAP: Record<string, LucideIcon> = {
+  eye: Eye,
+  target: Target,
+  lightbulb: Lightbulb,
+  shield: ShieldCheck,
+  shieldcheck: ShieldCheck,
+  medal: Medal,
+  handshake: HeartHandshake,
+  hearthandshake: HeartHandshake,
+  users: Users,
+  settings: Settings2,
+  settings2: Settings2,
+  lifebuoy: LifeBuoy,
+  zap: Zap,
+  lock: LockKeyhole,
+  lockkeyhole: LockKeyhole,
+  globe: Globe2,
+  globe2: Globe2,
+}
+
+function resolveCrudIcon(name: string): LucideIcon | null {
+  return CRUD_ICON_MAP[String(name || "").toLowerCase()] || null
+}
+
+export type CrudFieldOption = {
+  value: string
+  label: string
+}
 
 export type CrudField = {
   key: string
   label: string
-  type?: "text" | "textarea" | "number" | "checkbox" | "list" | "image"
+  type?:
+    | "text"
+    | "textarea"
+    | "number"
+    | "checkbox"
+    | "list"
+    | "image"
+    | "select"
+    | "icon"
   placeholder?: string
   required?: boolean
   hideInTable?: boolean
   /** Half-width fields sit 2 per row on larger screens */
   half?: boolean
+  /** Options for select / icon pickers */
+  options?: CrudFieldOption[]
 }
 
 type CrudRow = {
@@ -242,6 +305,27 @@ export function HomeApiCrudTable({
                   <span className="text-muted-foreground">—</span>
                 )
               }
+              if (field.type === "icon") {
+                const Icon = resolveCrudIcon(
+                  String(row.original[field.key] ?? ""),
+                )
+                return Icon ? (
+                  <Icon className="size-5 text-primary" aria-hidden />
+                ) : (
+                  <span className="text-muted-foreground">—</span>
+                )
+              }
+              if (field.type === "select") {
+                const raw = String(row.original[field.key] ?? "")
+                const label =
+                  field.options?.find((option) => option.value === raw)
+                    ?.label || raw
+                return (
+                  <span className="block max-w-[240px] truncate font-medium capitalize">
+                    {label}
+                  </span>
+                )
+              }
               const text = getCellValue
                 ? getCellValue(row.original, field.key)
                 : (() => {
@@ -369,6 +453,24 @@ export function HomeApiCrudTable({
                       ) : (
                         <p className="text-sm font-medium">—</p>
                       )
+                    ) : field.type === "icon" ? (
+                      (() => {
+                        const Icon = resolveCrudIcon(
+                          String(viewing[field.key] ?? ""),
+                        )
+                        return Icon ? (
+                          <Icon className="size-8 text-primary" aria-hidden />
+                        ) : (
+                          <p className="text-sm font-medium">—</p>
+                        )
+                      })()
+                    ) : field.type === "select" ? (
+                      <p className="text-sm font-medium capitalize">
+                        {field.options?.find(
+                          (option) =>
+                            option.value === String(viewing[field.key] ?? ""),
+                        )?.label || formatViewValue(viewing, field)}
+                      </p>
                     ) : (
                       <p className="whitespace-pre-wrap text-sm font-medium">
                         {formatViewValue(viewing, field)}
@@ -506,6 +608,71 @@ export function HomeApiCrudTable({
                     {uploadingKey === field.key ? (
                       <p className="text-xs text-muted-foreground">Uploading…</p>
                     ) : null}
+                  </>
+                ) : field.type === "select" ? (
+                  <>
+                    <Label htmlFor={field.key}>{field.label}</Label>
+                    <Select
+                      value={form[field.key] || undefined}
+                      onValueChange={(value) =>
+                        setForm((current) => ({
+                          ...current,
+                          [field.key]: value,
+                        }))
+                      }
+                    >
+                      <SelectTrigger
+                        id={field.key}
+                        className="h-11 w-full rounded-xl"
+                      >
+                        <SelectValue
+                          placeholder={field.placeholder || `Select ${field.label}`}
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {(field.options || []).map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </>
+                ) : field.type === "icon" ? (
+                  <>
+                    <Label>{field.label}</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {(field.options || []).map((option) => {
+                        const Icon = resolveCrudIcon(option.value)
+                        const selected = form[field.key] === option.value
+                        return (
+                          <button
+                            key={option.value}
+                            type="button"
+                            title={option.label}
+                            aria-label={option.label}
+                            aria-pressed={selected}
+                            onClick={() =>
+                              setForm((current) => ({
+                                ...current,
+                                [field.key]: option.value,
+                              }))
+                            }
+                            className={`flex size-11 items-center justify-center rounded-xl border transition ${
+                              selected
+                                ? "border-primary bg-primary/10 text-primary"
+                                : "border-input text-muted-foreground hover:border-primary/40 hover:text-foreground"
+                            }`}
+                          >
+                            {Icon ? (
+                              <Icon className="size-5" aria-hidden />
+                            ) : (
+                              <span className="text-xs">{option.label[0]}</span>
+                            )}
+                          </button>
+                        )
+                      })}
+                    </div>
                   </>
                 ) : (
                   <>

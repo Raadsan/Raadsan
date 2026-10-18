@@ -3,24 +3,31 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
-import { Boxes, BriefcaseBusiness, Coffee, GraduationCap, ShoppingBag } from "lucide-react";
+import { Boxes, Coffee, ShoppingBag } from "lucide-react";
+import { productsApi } from "@/api/products/products";
 import { cn } from "@/lib/utils";
 
 type MenuName = "services" | "products" | "resources";
 
-const dropdowns: Record<MenuName, { label: string; href: string; description?: string }[]> = {
+type DropdownItem = { label: string; href: string; description?: string };
+
+type ApiProduct = {
+  id: number;
+  title: string;
+  slug: string;
+  description?: string;
+};
+
+const staticDropdowns: Record<"services" | "resources", DropdownItem[]> = {
   services: [
     { label: "Web Hosting & Domain", href: "/services/web-hosting", description: "Domain search and reliable cloud hosting" },
     { label: "Software Development", href: "/services/software-development", description: "Custom software built around your needs" },
     { label: "AI-Driven Solutions", href: "/services/ai-solutions", description: "Smarter systems powered by AI" },
     { label: "Mobile App Development", href: "/services/mobile-app-development", description: "High-quality apps for every device" },
     { label: "ICT Training & Consultancy", href: "/services/ict-training", description: "Practical expertise that moves you forward" },
-  ],
-  products: [
-    { label: "E-Commerce System", href: "/products/ecommerce" },
-    { label: "Coffee Shop System", href: "/products/coffee-system" },
   ],
   resources: [
     { label: "Blog", href: "/resources/blog" },
@@ -41,7 +48,7 @@ const SERVICE_ICONS = [
   <><path key="a" d="M4 5h16v11H4zM8 20h8M12 16v4" /><path key="b" d="m8 10 2.2 2.2L16 7" /></>,
 ];
 
-const PRODUCT_ICONS = [ShoppingBag, Coffee];
+const PRODUCT_ICONS = [ShoppingBag, Coffee, Boxes];
 
 function ServiceIcon({ index }: { index: number }) {
   return (
@@ -90,6 +97,28 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const { data: productsData } = useQuery({
+    queryKey: ["public-products"],
+    queryFn: () => productsApi.getAll(),
+  });
+
+  const productItems = useMemo<DropdownItem[]>(() => {
+    const rows = Array.isArray(productsData)
+      ? (productsData as ApiProduct[])
+      : [];
+    return rows.map((product) => ({
+      label: product.title,
+      href: `/products/${product.slug}`,
+      description: product.description,
+    }));
+  }, [productsData]);
+
+  const dropdowns: Record<MenuName, DropdownItem[]> = {
+    services: staticDropdowns.services,
+    products: productItems,
+    resources: staticDropdowns.resources,
+  };
 
   useEffect(() => {
     const storedTheme = localStorage.getItem("raadsan-theme");
@@ -354,12 +383,17 @@ export default function Header() {
                             <span className="text-[#ffbc11] text-[20px] leading-none transition-transform duration-160 group-hover:translate-x-1" aria-hidden="true">→</span>
                           </Link>
                         </>
+                      ) : dropdowns[menu].length === 0 ? (
+                        <p className="px-3 py-3 text-[13px] text-[var(--muted)]">
+                          No products yet.
+                        </p>
                       ) : (
                         dropdowns[menu].map((item, index) => {
-                          const ProductIcon = PRODUCT_ICONS[index];
+                          const ProductIcon =
+                            PRODUCT_ICONS[index % PRODUCT_ICONS.length];
                           return (
                           <motion.div
-                            key={item.label}
+                            key={item.href}
                             initial={{ opacity: 0, x: -6 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: index * 0.04, duration: 0.18 }}

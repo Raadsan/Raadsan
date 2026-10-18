@@ -1,5 +1,12 @@
 import { notFound } from "next/navigation"
 
+import { AboutCompanyTable } from "@/components/system/about/about-company-table"
+import { AboutCoreValuesTable } from "@/components/system/about/about-core-values-table"
+import { AboutVisionMissionTable } from "@/components/system/about/about-vision-mission-table"
+import { AboutWhyChooseTable } from "@/components/system/about/about-why-choose-table"
+import { ContactFormTable } from "@/components/system/contacts/contact-form-table"
+import { ContactHeroTable } from "@/components/system/contacts/contact-hero-table"
+import { ContactInformationTable } from "@/components/system/contacts/contact-information-table"
 import { AchievementsTable } from "@/components/system/home/achievements-table"
 import { BlogCategoriesTable } from "@/components/system/home/blog-categories-table"
 import { BlogsTable } from "@/components/system/home/blogs-table"
@@ -45,6 +52,25 @@ const homeSectionTables: Record<
   faq: FaqsTable,
 }
 
+const contactsSectionTables: Record<
+  string,
+  React.ComponentType<{ title: string; description: string }>
+> = {
+  hero: ContactHeroTable,
+  "contact-information": ContactInformationTable,
+  messages: ContactFormTable,
+}
+
+const aboutSectionTables: Record<
+  string,
+  React.ComponentType<{ title: string; description: string }>
+> = {
+  "about-company": AboutCompanyTable,
+  "vision-mission": AboutVisionMissionTable,
+  "core-values": AboutCoreValuesTable,
+  "why-choose-us": AboutWhyChooseTable,
+}
+
 export default async function ManagementSectionPage({ params }: Props) {
   const { page, section } = await params
   const pageModule = getPageModule(page)
@@ -54,6 +80,30 @@ export default async function ManagementSectionPage({ params }: Props) {
 
   if (page === "home") {
     const Table = homeSectionTables[section]
+    if (!Table) notFound()
+
+    return (
+      <Table
+        title={sectionItem.title}
+        description={sectionItem.description}
+      />
+    )
+  }
+
+  if (page === "contacts") {
+    const Table = contactsSectionTables[section]
+    if (!Table) notFound()
+
+    return (
+      <Table
+        title={sectionItem.title}
+        description={sectionItem.description}
+      />
+    )
+  }
+
+  if (page === "about") {
+    const Table = aboutSectionTables[section]
     if (!Table) notFound()
 
     return (

@@ -101,20 +101,20 @@ export default function AchievementsSection() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: index * 0.08 }}
-                  className="group flex flex-col items-center justify-center rounded-2xl border border-slate-200/80 bg-[#f6f9ff] p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#116cc6]/30 hover:shadow-md dark:border-slate-800/80 dark:bg-[#07142a] dark:hover:border-[#ffbc11]/30"
+                  className="group flex flex-col items-center justify-center text-center"
                 >
-                  <div className="mb-5 flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl bg-[#116cc6]/10 text-[#116cc6] transition-transform duration-300 group-hover:scale-110 dark:bg-[#ffbc11]/10 dark:text-[#ffbc11]">
-                    {iconSrc ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={iconSrc}
-                        alt=""
-                        className="h-8 w-8 object-contain"
-                      />
-                    ) : (
-                      <span className="text-lg font-black">★</span>
-                    )}
-                  </div>
+                  {iconSrc ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={iconSrc}
+                      alt=""
+                      className="mb-5 h-14 w-14 object-contain transition-transform duration-300 group-hover:scale-110"
+                    />
+                  ) : (
+                    <span className="mb-5 text-lg font-black text-[#116cc6] dark:text-[#ffbc11]">
+                      ★
+                    </span>
+                  )}
 
                   <div className="mb-2 text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl dark:text-white">
                     {metric.value > 0 ? (

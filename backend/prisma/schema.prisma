@@ -118,4 +118,94 @@ model Faq {
 }
 
 
+// contact models
+model ContactHero {
+  id        Int    @id @default(autoincrement())
+  title     String @db.VarChar(120)
+  highlight String @db.VarChar(120)
+  subtitle  String @db.Text
+  order     Int    @default(0)
+
+  @@map("contact_heroes")
+}
+
+model ContactInformation {
+  id    Int    @id @default(autoincrement())
+  /// mail | phone | map | facebook | instagram | linkedin | github
+  icon  String @db.VarChar(40)
+  label String @db.VarChar(120)
+  value String @db.Text
+  /// For social icons, value is the URL
+  href  String? @db.VarChar(500)
+  order Int    @default(0)
+
+  @@map("contact_information")
+}
+
+model ContactSubmission {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(160)
+  email     String   @db.VarChar(200)
+  subject   String?  @db.VarChar(255)
+  phone     String   @db.VarChar(60)
+  message   String   @db.Text
+  createdAt DateTime @default(now())
+
+  @@map("contact_submissions")
+}
+
+// products
+model Product {
+  id          Int    @id @default(autoincrement())
+  title       String @db.VarChar(160)
+  slug        String @unique @db.VarChar(120)
+  description String @db.VarChar(500)
+  /// [{ icon, title, description }]
+  features    Json
+  order       Int    @default(0)
+
+  @@map("products")
+}
+
 // about models
+model AboutCompany {
+  id      Int    @id @default(autoincrement())
+  title   String @db.VarChar(120)
+  content String @db.Text
+  image   String @db.VarChar(500)
+
+  @@map("about_companies")
+}
+
+model AboutVisionMission {
+  id    Int    @id @default(autoincrement())
+  /// vision | mission
+  type  String @db.VarChar(20)
+  title String @db.VarChar(120)
+  text  String @db.Text
+  icon  String @db.VarChar(40)
+  order Int    @default(0)
+
+  @@map("about_vision_missions")
+}
+
+model AboutCoreValue {
+  id    Int    @id @default(autoincrement())
+  title String @db.VarChar(120)
+  text  String @db.Text
+  icon  String @db.VarChar(40)
+  order Int    @default(0)
+
+  @@map("about_core_values")
+}
+
+model AboutWhyChoose {
+  id    Int    @id @default(autoincrement())
+  title String @db.VarChar(160)
+  text  String @db.Text
+  icon  String @db.VarChar(40)
+  order Int    @default(0)
+
+  @@map("about_why_choose")
+}
+
