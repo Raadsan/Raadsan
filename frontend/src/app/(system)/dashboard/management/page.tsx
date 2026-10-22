@@ -45,11 +45,13 @@ export default function ManagementPage() {
                 <div className="flex items-start justify-between gap-3">
                   <CardTitle>{item.title}</CardTitle>
                   <Badge variant="secondary" className="shrink-0">
-                    {sectionCount} sections
+                    {sectionCount > 0 ? `${sectionCount} sections` : "Table"}
                   </Badge>
                 </div>
                 <CardDescription>
-                  Manage {item.title.toLowerCase()} page sections.
+                  {sectionCount > 0
+                    ? `Manage ${item.title.toLowerCase()} page sections.`
+                    : `Manage ${item.title.toLowerCase()} list and details.`}
                 </CardDescription>
               </CardHeader>
               <CardContent>

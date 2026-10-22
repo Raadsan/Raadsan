@@ -1,7 +1,6 @@
 export type PageModuleKey =
   | "home"
   | "about"
-  | "services"
   | "products"
   | "contacts"
 
@@ -11,6 +10,7 @@ export type PageSection = {
   title: string
   slug: string
   description: string
+  url?: string
 }
 
 export type PageModule = {
@@ -93,32 +93,6 @@ export const pageModules: PageModule[] = [
     ],
   },
   {
-    key: "services",
-    title: "Services",
-    sections: [
-      {
-        title: "Hero",
-        slug: "hero",
-        description: "Manage services page hero content.",
-      },
-      {
-        title: "Services List",
-        slug: "services-list",
-        description: "Manage service cards and details.",
-      },
-      {
-        title: "How We Work",
-        slug: "how-we-work",
-        description: "Manage process steps section.",
-      },
-      {
-        title: "Call To Action",
-        slug: "cta",
-        description: "Manage services CTA block.",
-      },
-    ],
-  },
-  {
     key: "products",
     title: "Products",
     // Products are registered via CRUD — no hardcoded section cards
@@ -161,6 +135,8 @@ export function getPageSection(
 }
 
 export function getSectionUrl(page: PageModuleKey, sectionSlug: string) {
+  const section = getPageSection(page, sectionSlug)
+  if (section?.url) return section.url
   return `/dashboard/management/${page}/${sectionSlug}`
 }
 

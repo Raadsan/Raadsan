@@ -34,8 +34,8 @@ export function AuthShell({
                 Welcome Back!
               </h1>
               <p className="text-sm leading-7 text-white/75">
-                Streamline your website workflow with Raadsan Technology. Sign
-                in to manage pages, update content, and keep your brand growing.
+                Empowering your business with smart digital solutions. Sign in to
+                securely manage your platform, operations, and services.
               </p>
             </div>
           </div>

@@ -1,12 +1,5 @@
-import { DashboardPageShell } from "@/components/system/dashboard-page-shell"
+import { UsersTable } from "@/components/system/configuration/users-table"
 
 export default function UsersPage() {
-  return (
-    <DashboardPageShell
-      title="Users"
-      description="Manage admin users and assign them to roles."
-      badge="Configuration"
-      actionLabel="Add user"
-    />
-  )
+  return <UsersTable />
 }

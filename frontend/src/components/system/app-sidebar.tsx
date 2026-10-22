@@ -8,6 +8,7 @@ import {
   IconArrowLeft,
   IconDashboard,
   IconFolder,
+  IconLogout,
   IconSettings,
 } from "@tabler/icons-react"
 
@@ -26,6 +27,7 @@ import {
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -171,6 +173,22 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <NavMain items={configurationNavItems} />
         ) : null}
       </SidebarContent>
+
+      <SidebarFooter className="px-1 pb-4">
+        <SidebarSeparator className="mx-3 mb-3 bg-white/15" />
+        <SidebarMenu className="px-3">
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              type="button"
+              className="h-11 cursor-pointer rounded-xl px-3 text-[15px] font-medium text-white/80 hover:bg-white/10 hover:text-white"
+              onClick={() => router.push("/login")}
+            >
+              <IconLogout stroke={1.6} />
+              <span>Logout</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
 
       <SidebarRail />
     </Sidebar>

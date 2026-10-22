@@ -339,11 +339,11 @@ export default function AboutPage() {
                     viewport={{ once: true }}
                     variants={reveal}
                     transition={{ duration: 0.4, delay: index * 0.07 }}
-                    className="group rounded-2xl border border-slate-200/80 bg-[#f8fbff] p-7 transition hover:-translate-y-1 hover:border-[#116cc6]/30 hover:shadow-lg dark:border-white/[0.08] dark:bg-[#07142a] dark:hover:border-[#ffbc11]/30"
+                    className="group flex flex-col items-center text-center rounded-2xl border border-slate-200/80 bg-[#f8fbff] p-7 transition hover:-translate-y-1 hover:border-[#116cc6]/30 hover:shadow-lg dark:border-white/[0.08] dark:bg-[#07142a] dark:hover:border-[#ffbc11]/30"
                   >
                     <Icon className="mb-6 h-7 w-7 text-[#116cc6] dark:text-[#ffbc11]" />
                     <h3 className="mb-3 text-xl font-extrabold">{item.title}</h3>
-                    <p className="text-sm leading-6 text-[var(--muted)]">
+                    <p className="text-sm leading-6 text-center text-[var(--muted)]">
                       {item.text}
                     </p>
                   </motion.article>

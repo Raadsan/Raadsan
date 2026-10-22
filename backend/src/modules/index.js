@@ -17,6 +17,9 @@ import aboutCoreValueRouter from "./management/about/core-values/aboutCoreValueR
 import aboutWhyChooseRouter from "./management/about/why-choose/aboutWhyChooseRoute.js"
 import productRouter from "./management/products/productRoute.js"
 import uploadRouter from "./uploads/uploadRoute.js"
+import roleRouter from "./auth/roles/roleRoute.js"
+import userRouter from "./auth/users/userRoute.js"
+import authRouter from "./auth/authentication/authRoute.js"
 
 const app = express()
 
@@ -63,6 +66,9 @@ app.use("/api/about-vision-mission", aboutVisionMissionRouter)
 app.use("/api/about-core-values", aboutCoreValueRouter)
 app.use("/api/about-why-choose", aboutWhyChooseRouter)
 app.use("/api/products", productRouter)
+app.use("/api/roles", roleRouter)
+app.use("/api/users", userRouter)
+app.use("/api/auth", authRouter)
 app.use("/api/uploads", uploadRouter)
 
 export default app

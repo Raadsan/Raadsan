@@ -10,6 +10,7 @@ import {
   IconLock,
 } from "@tabler/icons-react"
 
+import api from "@/api/axios"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -25,16 +26,57 @@ export function SignupForm() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+    setError(null)
+
+    const formData = new FormData(event.currentTarget)
+    const fullName = (formData.get("fullName") as string)?.trim()
+    const email = (formData.get("email") as string)?.trim()
+    const password = formData.get("password") as string
+    const confirmPassword = formData.get("confirmPassword") as string
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.")
+      return
+    }
+
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters.")
+      return
+    }
+
     setLoading(true)
 
-    // Frontend only for now — wire to backend later
-    window.setTimeout(() => {
-      setLoading(false)
+    try {
+      await api.post("/api/auth/register", {
+        fullName,
+        email,
+        password,
+        confirmPassword,
+      })
+
+      // Store credentials in sessionStorage so the login form can automatically fill them
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem(
+          "signup_credentials",
+          JSON.stringify({ email, password }),
+        )
+      }
+
       router.push("/login")
-    }, 700)
+    } catch (err: unknown) {
+      const message =
+        (err as { response?: { data?: { message?: string } } })?.response?.data
+          ?.message ||
+        (err as { message?: string })?.message ||
+        "Failed to create account. Please try again."
+      setError(message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -85,7 +127,6 @@ export function SignupForm() {
           name="phone"
           type="tel"
           placeholder="Phone Number"
-          required
           autoComplete="tel"
           className="h-full flex-1 rounded-none border-0 bg-transparent px-3 shadow-none placeholder:text-slate-400 focus-visible:ring-0 dark:bg-transparent dark:placeholder:text-slate-500"
         />
@@ -142,6 +183,12 @@ export function SignupForm() {
           </button>
         </label>
       </div>
+
+      {error && (
+        <p className="rounded-lg bg-destructive/10 px-4 py-2.5 text-sm font-medium text-destructive">
+          {error}
+        </p>
+      )}
 
       <Button
         type="submit"

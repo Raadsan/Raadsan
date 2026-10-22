@@ -20,3 +20,7 @@ export { aboutCompanyApi } from "./about/company"
 export { aboutVisionMissionApi } from "./about/vision-mission"
 export { aboutCoreValuesApi } from "./about/core-values"
 export { aboutWhyChooseApi } from "./about/why-choose"
+
+// Configuration APIs
+export { rolesApi } from "./configuration/roles"
+export { usersApi } from "./configuration/users"
