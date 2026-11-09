@@ -19,7 +19,10 @@ import productRouter from "./management/products/productRoute.js"
 import uploadRouter from "./uploads/uploadRoute.js"
 import roleRouter from "./auth/roles/roleRoute.js"
 import userRouter from "./auth/users/userRoute.js"
+import menuRouter from "./auth/menu/menuRoute.js"
+import rolePermissionRouter from "./auth/role-permission/rolePermissionRoute.js"
 import authRouter from "./auth/authentication/authRoute.js"
+import dashboardRouter from "./management/dashboard/dashboardRoute.js"
 
 const app = express()
 
@@ -68,7 +71,10 @@ app.use("/api/about-why-choose", aboutWhyChooseRouter)
 app.use("/api/products", productRouter)
 app.use("/api/roles", roleRouter)
 app.use("/api/users", userRouter)
+app.use("/api/menus", menuRouter)
+app.use("/api/role-permissions", rolePermissionRouter)
 app.use("/api/auth", authRouter)
 app.use("/api/uploads", uploadRouter)
+app.use("/api/dashboard", dashboardRouter)
 
 export default app

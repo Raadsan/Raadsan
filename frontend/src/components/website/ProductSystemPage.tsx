@@ -14,6 +14,7 @@ import {
   iconFromFeatureTitle,
   resolveProductFeatureIcon,
 } from "@/lib/product-feature-icons"
+import { motionInitial } from "@/lib/website-motion"
 
 type ProductFeature = {
   icon?: string
@@ -93,7 +94,7 @@ export default function ProductSystemPage({ slug }: { slug: string }) {
             <>
               <motion.h1
                 variants={fadeUp}
-                initial="hidden"
+                initial={motionInitial}
                 animate="visible"
                 custom={0.08}
                 className="relative z-10 max-w-[760px] text-[clamp(42px,5.4vw,72px)] leading-[1.12] font-extrabold tracking-[-0.045em] text-[var(--foreground)]"
@@ -111,7 +112,7 @@ export default function ProductSystemPage({ slug }: { slug: string }) {
 
               <motion.p
                 variants={fadeUp}
-                initial="hidden"
+                initial={motionInitial}
                 animate="visible"
                 custom={0.16}
                 className="relative z-10 mt-5 max-w-[560px] text-[clamp(17px,1.5vw,20px)] leading-[1.65] text-[var(--muted)]"
@@ -122,7 +123,7 @@ export default function ProductSystemPage({ slug }: { slug: string }) {
               {sample ? (
                 <motion.div
                   variants={fadeUp}
-                  initial="hidden"
+                  initial={motionInitial}
                   animate="visible"
                   custom={0.24}
                   className="relative z-10 mx-auto mt-12 w-full max-w-[960px] overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface)] shadow-[0_24px_68px_rgba(9,32,56,0.16)] dark:shadow-[0_24px_68px_rgba(0,0,0,0.5)]"
@@ -165,7 +166,7 @@ export default function ProductSystemPage({ slug }: { slug: string }) {
                     <motion.div
                       key={`${feature.title}-${index}`}
                       variants={fadeUp}
-                      initial="hidden"
+                      initial={motionInitial}
                       whileInView="visible"
                       viewport={{ once: true }}
                       custom={index * 0.05}

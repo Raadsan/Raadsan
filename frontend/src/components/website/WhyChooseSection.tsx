@@ -13,6 +13,7 @@ import {
 } from "lucide-react"
 
 import { aboutWhyChooseApi } from "@/api/about/why-choose"
+import { motionInitial } from "@/lib/website-motion"
 
 const reveal = { hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0 } }
 
@@ -90,7 +91,7 @@ export default function WhyChooseSection() {
     >
       <div className="mx-auto max-w-[1240px]">
         <motion.div
-          initial="hidden"
+          initial={motionInitial}
           whileInView="visible"
           viewport={{ once: true }}
           variants={reveal}
@@ -115,7 +116,7 @@ export default function WhyChooseSection() {
             return (
               <motion.article
                 key={item.id}
-                initial="hidden"
+                initial={motionInitial}
                 whileInView="visible"
                 viewport={{ once: true }}
                 variants={reveal}

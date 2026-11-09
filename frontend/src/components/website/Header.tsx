@@ -8,6 +8,13 @@ import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { Boxes, Coffee, ShoppingBag } from "lucide-react";
 import { productsApi } from "@/api/products/products";
+import {
+  getAuthUser,
+  isDashboardRole,
+  isWebsiteOnlyRole,
+  type AuthUser,
+} from "@/lib/auth-session";
+import { WebsiteProfileMenu } from "@/components/website/WebsiteProfileMenu";
 import { cn } from "@/lib/utils";
 
 type MenuName = "services" | "products" | "resources";
@@ -95,8 +102,19 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState<MenuName | null>(null);
   const [scrolled, setScrolled] = useState(false);
+  const [sessionUser, setSessionUser] = useState<AuthUser | null>(null);
   const headerRef = useRef<HTMLElement>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const syncSession = () => setSessionUser(getAuthUser());
+    syncSession();
+    window.addEventListener("raadsan-auth-change", syncSession);
+    return () => window.removeEventListener("raadsan-auth-change", syncSession);
+  }, [pathname]);
+
+  const showWebsiteProfileMenu =
+    sessionUser != null && isWebsiteOnlyRole(sessionUser.roleName);
 
   const { data: productsData } = useQuery({
     queryKey: ["public-products"],
@@ -454,16 +472,27 @@ export default function Header() {
             >
               <ThemeIcon dark={darkMode} />
             </button>
-            <Link
-              className="flex items-center justify-center gap-2 min-h-[44px] px-[21px] rounded-full bg-[#116cc6] shadow-[0_8px_20px_rgba(17,108,198,0.22)] text-white text-[14px] font-bold transition-all duration-160 hover:bg-[#0b559e] hover:-translate-y-px dark:bg-[#ffbc11] dark:shadow-[0_8px_20px_rgba(255,188,17,0.2)] dark:text-black dark:hover:bg-[#eaaa00] max-[900px]:flex-1"
-              href="/login"
-              onClick={closeNavigation}
-            >
-              Client Area
-              <svg className="w-[17px] h-[17px] fill-none stroke-current" style={{ strokeWidth: 1.8, strokeLinecap: "round", strokeLinejoin: "round" } as React.CSSProperties} viewBox="0 0 20 20" aria-hidden="true">
-                <path d="M4 10h12M11.5 5.5 16 10l-4.5 4.5" />
-              </svg>
-            </Link>
+            {showWebsiteProfileMenu && sessionUser ? (
+              <WebsiteProfileMenu
+                user={sessionUser}
+                onAfterLogout={() => setSessionUser(null)}
+              />
+            ) : (
+              <Link
+                className="flex items-center justify-center gap-2 min-h-[44px] px-[21px] rounded-full bg-[#116cc6] shadow-[0_8px_20px_rgba(17,108,198,0.22)] text-white text-[14px] font-bold transition-all duration-160 hover:bg-[#0b559e] hover:-translate-y-px dark:bg-[#ffbc11] dark:shadow-[0_8px_20px_rgba(255,188,17,0.2)] dark:text-black dark:hover:bg-[#eaaa00] max-[900px]:flex-1"
+                href={
+                  sessionUser && isDashboardRole(sessionUser.roleName)
+                    ? "/dashboard"
+                    : "/login"
+                }
+                onClick={closeNavigation}
+              >
+                Client Area
+                <svg className="w-[17px] h-[17px] fill-none stroke-current" style={{ strokeWidth: 1.8, strokeLinecap: "round", strokeLinejoin: "round" } as React.CSSProperties} viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M4 10h12M11.5 5.5 16 10l-4.5 4.5" />
+                </svg>
+              </Link>
+            )}
           </div>
         </div>
       </nav>

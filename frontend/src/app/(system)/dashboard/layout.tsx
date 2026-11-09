@@ -1,4 +1,5 @@
 import { AppSidebar } from "@/components/system/app-sidebar"
+import { DashboardAccessGuard } from "@/components/system/dashboard-access-guard"
 import { SiteHeader } from "@/components/system/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 
@@ -8,6 +9,7 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   return (
+    <DashboardAccessGuard>
     <SidebarProvider
       className="bg-background"
       style={
@@ -23,5 +25,6 @@ export default function DashboardLayout({
         <div className="flex flex-1 flex-col bg-background">{children}</div>
       </SidebarInset>
     </SidebarProvider>
+    </DashboardAccessGuard>
   )
 }

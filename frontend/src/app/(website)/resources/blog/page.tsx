@@ -12,6 +12,7 @@ import { mediaUrl } from "@/api/uploads"
 import Header from "@/components/website/Header"
 import Footer from "@/components/website/Footer"
 import FloatingContact from "@/components/website/FloatingContact"
+import { motionInitial } from "@/lib/website-motion"
 
 type ApiCategory = {
   id: number
@@ -31,12 +32,14 @@ type ApiBlog = {
   category?: { id: number; title: string; slug: string }
 }
 
-const fadeUp = {
+import type { Variants } from "framer-motion"
+
+const fadeUp: Variants = {
   hidden: { opacity: 0, y: 24 },
   visible: (delay = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1], delay },
+    transition: { duration: 0.55, ease: "easeOut", delay },
   }),
 }
 
@@ -124,7 +127,7 @@ export default function BlogPage() {
 
           <motion.span
             variants={fadeUp}
-            initial="hidden"
+            initial={motionInitial}
             animate="visible"
             custom={0.04}
             className="relative z-10 mb-4 inline-block rounded-full border border-[color-mix(in_srgb,#116cc6_25%,transparent)] bg-[color-mix(in_srgb,#116cc6_8%,transparent)] px-4 py-1.5 text-[11px] font-extrabold tracking-widest text-[#116cc6] uppercase dark:border-[color-mix(in_srgb,#ffbc11_25%,transparent)] dark:bg-[color-mix(in_srgb,#ffbc11_8%,transparent)] dark:text-[#ffbc11]"
@@ -135,7 +138,7 @@ export default function BlogPage() {
           <motion.h1
             id="blog-hero-heading"
             variants={fadeUp}
-            initial="hidden"
+            initial={motionInitial}
             animate="visible"
             custom={0.08}
             className="relative z-10 max-w-[700px] text-[clamp(42px,5.4vw,72px)] leading-[1.12] font-extrabold tracking-[-0.045em] text-[var(--foreground)]"
@@ -146,7 +149,7 @@ export default function BlogPage() {
 
           <motion.p
             variants={fadeUp}
-            initial="hidden"
+            initial={motionInitial}
             animate="visible"
             custom={0.16}
             className="relative z-10 mt-5 max-w-[560px] text-[clamp(17px,1.5vw,20px)] leading-[1.65] text-[var(--muted)]"
@@ -160,7 +163,7 @@ export default function BlogPage() {
           <div className="mx-auto max-w-[1200px]">
             <motion.div
               variants={fadeUp}
-              initial="hidden"
+              initial={motionInitial}
               whileInView="visible"
               viewport={{ once: true }}
               className="flex flex-wrap gap-2"
@@ -197,7 +200,7 @@ export default function BlogPage() {
               <div className="mx-auto max-w-[1200px]">
                 <motion.div
                   variants={fadeUp}
-                  initial="hidden"
+                  initial={motionInitial}
                   whileInView="visible"
                   viewport={{ once: true }}
                   custom={0}
@@ -248,7 +251,7 @@ export default function BlogPage() {
                   {rest.map((post, index) => (
                     <motion.article
                       key={post.id}
-                      initial={{ opacity: 0, y: 20 }}
+                      initial={motionInitial}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ duration: 0.4, delay: index * 0.1 }}

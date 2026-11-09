@@ -1,5 +1,7 @@
 import bcrypt from "bcryptjs"
 import { prisma } from "../../../lib/prisma.js"
+import { signAccessToken } from "../../../lib/jwt.js"
+import { buildMenuTreeForRole } from "../menu/buildMenuTree.js"
 
 const SALT_ROUNDS = 10
 
@@ -17,8 +19,8 @@ export async function register(req, res) {
   if (!fullName) return res.status(422).json({ message: "Full name is required" })
   if (!email) return res.status(422).json({ message: "Email is required" })
   if (!password) return res.status(422).json({ message: "Password is required" })
-  if (password.length < 8) {
-    return res.status(422).json({ message: "Password must be at least 8 characters" })
+  if (password.length < 6) {
+    return res.status(422).json({ message: "Password must be at least 6 characters" })
   }
   if (password !== confirmPassword) {
     return res.status(422).json({ message: "Passwords do not match" })
@@ -90,9 +92,53 @@ export async function login(req, res) {
       return res.status(401).json({ message: "Incorrect email or password" })
     }
 
-    // Return user info (never return password)
     const { password: _pw, ...safeUser } = user
-    return res.json({ user: safeUser })
+
+    const token = signAccessToken({
+      userId: safeUser.id,
+      email: safeUser.email,
+      roleId: safeUser.roleId,
+      roleName: safeUser.role.name,
+    })
+
+    const menu = await buildMenuTreeForRole(safeUser.roleId)
+
+    return res.json({
+      user: safeUser,
+      token,
+      menu,
+    })
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
+// GET /api/auth/me — current user + menus allowed by role (requires Bearer token)
+export async function getMe(req, res) {
+  try {
+    const userId = req.auth?.userId
+    if (!userId) {
+      return res.status(401).json({ message: "Authentication required" })
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        roleId: true,
+        role: { select: { id: true, name: true } },
+      },
+    })
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" })
+    }
+
+    const menu = await buildMenuTreeForRole(user.roleId)
+
+    return res.json({ user, menu })
   } catch (error) {
     res.status(500).json({ message: error.message })
   }

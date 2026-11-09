@@ -1,3 +1,7 @@
+// Dashboard API
+export { dashboardApi } from "./dashboard"
+export type { DashboardData, DashboardStats } from "./dashboard"
+
 // Home APIs
 export { servicesApi } from "./home/services"
 export { hostingApi } from "./home/hosting"
@@ -24,3 +28,7 @@ export { aboutWhyChooseApi } from "./about/why-choose"
 // Configuration APIs
 export { rolesApi } from "./configuration/roles"
 export { usersApi } from "./configuration/users"
+export { menuApi } from "./configuration/menu"
+export type { MenuItem, MenuPayload } from "./configuration/menu"
+export { rolePermissionApi } from "./configuration/role-permission"
+export type { RolePermissionItem, SaveRolePermissionsPayload } from "./configuration/role-permission"

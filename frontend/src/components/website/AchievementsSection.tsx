@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, type ComponentType } from "react"
 import { useQuery } from "@tanstack/react-query"
 import {
   animate,
@@ -9,9 +9,109 @@ import {
   useMotionValue,
   useTransform,
 } from "framer-motion"
+import {
+  Award,
+  Briefcase,
+  Building2,
+  CheckCircle2,
+  Clock,
+  Code2,
+  Cpu,
+  Eye,
+  FolderCheck,
+  Globe2,
+  GraduationCap,
+  Heart,
+  HeartHandshake,
+  LifeBuoy,
+  Lightbulb,
+  LockKeyhole,
+  Medal,
+  Rocket,
+  Settings2,
+  ShieldCheck,
+  Smile,
+  Sparkles,
+  Star,
+  Target,
+  ThumbsUp,
+  TrendingUp,
+  Trophy,
+  Users,
+  Zap,
+  type LucideProps,
+} from "lucide-react"
 
 import { achievementsApi } from "@/api/home/achievements"
 import { mediaUrl } from "@/api/uploads"
+import { motionInitial } from "@/lib/website-motion"
+
+type LucideIcon = ComponentType<LucideProps>
+
+const ACHIEVEMENT_ICON_MAP: Record<string, LucideIcon> = {
+  trophy: Trophy,
+  award: Award,
+  medal: Medal,
+  star: Star,
+  users: Users,
+  briefcase: Briefcase,
+  check: CheckCircle2,
+  checkcircle: CheckCircle2,
+  "check-circle": CheckCircle2,
+  circlecheck: CheckCircle2,
+  folder: FolderCheck,
+  foldercheck: FolderCheck,
+  "folder-check": FolderCheck,
+  sparkles: Sparkles,
+  thumbsup: ThumbsUp,
+  "thumbs-up": ThumbsUp,
+  smile: Smile,
+  clock: Clock,
+  target: Target,
+  trendingup: TrendingUp,
+  "trending-up": TrendingUp,
+  zap: Zap,
+  rocket: Rocket,
+  globe: Globe2,
+  globe2: Globe2,
+  heart: Heart,
+  handshake: HeartHandshake,
+  hearthandshake: HeartHandshake,
+  shield: ShieldCheck,
+  shieldcheck: ShieldCheck,
+  lightbulb: Lightbulb,
+  building: Building2,
+  graduationcap: GraduationCap,
+  "graduation-cap": GraduationCap,
+  code: Code2,
+  cpu: Cpu,
+  settings: Settings2,
+  lifebuoy: LifeBuoy,
+  lock: LockKeyhole,
+  eye: Eye,
+}
+
+function isImagePath(val: string) {
+  if (!val) return false
+  const str = String(val).trim()
+  return (
+    str.startsWith("http://") ||
+    str.startsWith("https://") ||
+    str.startsWith("/") ||
+    str.startsWith("blob:") ||
+    str.startsWith("data:") ||
+    /\.(png|jpe?g|svg|webp|gif|avif)$/i.test(str)
+  )
+}
+
+function resolveAchievementIcon(name: string): LucideIcon {
+  const normalized = String(name || "").toLowerCase().trim().replace(/\s+/g, "-")
+  return (
+    ACHIEVEMENT_ICON_MAP[normalized] ||
+    ACHIEVEMENT_ICON_MAP[normalized.replace(/-/g, "")] ||
+    Trophy
+  )
+}
 
 type ApiAchievement = {
   id: number
@@ -67,7 +167,7 @@ export default function AchievementsSection() {
     >
       <div className="relative z-10 mx-auto max-w-[1320px]">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={motionInitial}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
@@ -93,22 +193,30 @@ export default function AchievementsSection() {
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:gap-8 lg:grid-cols-4">
             {achievements.map((item, index) => {
               const metric = parseMetric(item.count)
-              const iconSrc = mediaUrl(item.icon)
+              const isImage = isImagePath(item.icon)
+              const iconSrc = isImage ? mediaUrl(item.icon) : null
+              const Icon = !isImage ? resolveAchievementIcon(item.icon) : null
               return (
                 <motion.div
                   key={item.id}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={motionInitial}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: index * 0.08 }}
                   className="group flex flex-col items-center justify-center text-center"
                 >
-                  {iconSrc ? (
+                  {isImage && iconSrc ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={iconSrc}
                       alt=""
                       className="mb-5 h-14 w-14 object-contain transition-transform duration-300 group-hover:scale-110"
+                    />
+                  ) : Icon ? (
+                    <Icon
+                      className="mb-5 h-12 w-12 text-[#116cc6] transition-transform duration-300 group-hover:scale-110 dark:text-[#ffbc11]"
+                      strokeWidth={1.8}
+                      aria-hidden
                     />
                   ) : (
                     <span className="mb-5 text-lg font-black text-[#116cc6] dark:text-[#ffbc11]">

@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import HeroDomainSearch from "./HeroDomainSearch";
+import { motionInitial } from "@/lib/website-motion";
 
 export default function DomainSection() {
   return (
@@ -17,7 +18,7 @@ export default function DomainSection() {
       <div className="relative z-[1] w-[min(100%,1240px)] mx-auto">
         <motion.div
           className="max-w-[1000px] mx-auto mb-[42px] text-center max-[480px]:mb-[30px]"
-          initial={{ opacity: 0, y: 24 }}
+          initial={motionInitial}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.4 }}
           transition={{ duration: 0.55 }}

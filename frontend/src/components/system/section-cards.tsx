@@ -1,10 +1,14 @@
+"use client"
+
 import {
   IconArticle,
-  IconUsers,
+  IconLoader2,
+  IconMessage,
   IconServer,
-  IconUser,
+  IconUsers,
 } from "@tabler/icons-react"
 
+import type { DashboardStats } from "@/api/dashboard"
 import { Badge } from "@/components/ui/badge"
 import {
   Card,
@@ -15,64 +19,79 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
-const cards = [
+interface CardConfig {
+  label: string
+  key: keyof DashboardStats
+  hint: string
+  icon: React.ComponentType<{ className?: string }>
+}
+
+const cardConfigs: CardConfig[] = [
   {
     label: "Blogs",
-    value: "128",
+    key: "blogs",
     hint: "Published blog posts",
-    change: "+8.2%",
     icon: IconArticle,
   },
   {
     label: "Clients",
-    value: "54",
-    hint: "Accounts in client area",
-    change: "+3.1%",
+    key: "clients",
+    hint: "Registered client accounts",
     icon: IconUsers,
   },
   {
     label: "Services",
-    value: "12",
+    key: "services",
     hint: "Published service pages",
-    change: "+2",
     icon: IconServer,
   },
   {
-    label: "User",
-    value: "19",
-    hint: "New contact inquiries",
-    change: "+5",
-    icon: IconUser,
+    label: "Contact Inquiries",
+    key: "contactInquiries",
+    hint: "New contact form submissions",
+    icon: IconMessage,
   },
 ]
 
-export function SectionCards() {
+interface SectionCardsProps {
+  stats?: DashboardStats | null
+  isLoading?: boolean
+}
+
+export function SectionCards({ stats, isLoading }: SectionCardsProps) {
   return (
     <div className="grid grid-cols-1 gap-4 px-4 lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
-      {cards.map((card) => (
-        <Card
-          key={card.label}
-          className="border-border/80 bg-card shadow-sm transition-shadow hover:shadow-md"
-        >
-          <CardHeader>
-            <CardDescription className="flex items-center gap-2">
-              <card.icon className="size-4 text-primary" />
-              {card.label}
-            </CardDescription>
-            <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-              {card.value}
-            </CardTitle>
-            <CardAction>
-              <Badge className="bg-secondary/20 text-foreground hover:bg-secondary/30">
-                {card.change}
-              </Badge>
-            </CardAction>
-          </CardHeader>
-          <CardFooter className="text-sm text-muted-foreground">
-            {card.hint}
-          </CardFooter>
-        </Card>
-      ))}
+      {cardConfigs.map((card) => {
+        const value = stats?.[card.key] ?? null
+        return (
+          <Card
+            key={card.label}
+            className="border-border/80 bg-card shadow-sm transition-shadow hover:shadow-md"
+          >
+            <CardHeader>
+              <CardDescription className="flex items-center gap-2">
+                <card.icon className="size-4 text-primary" />
+                {card.label}
+              </CardDescription>
+              <CardTitle className="flex items-center gap-2 text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+                {isLoading ? (
+                  <IconLoader2 className="size-6 animate-spin text-muted-foreground" />
+                ) : (
+                  (value ?? "—")
+                )}
+              </CardTitle>
+              <CardAction>
+                <Badge className="bg-secondary/20 text-foreground hover:bg-secondary/30">
+                  {isLoading ? "..." : "Live"}
+                </Badge>
+              </CardAction>
+            </CardHeader>
+            <CardFooter className="text-sm text-muted-foreground">
+              {card.hint}
+            </CardFooter>
+          </Card>
+        )
+      })}
     </div>
   )
 }

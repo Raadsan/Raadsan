@@ -16,6 +16,7 @@ import {
 } from "lucide-react"
 
 import { servicesApi } from "@/api/home/services"
+import { motionInitial } from "@/lib/website-motion"
 
 type ApiService = {
   id: number
@@ -100,7 +101,7 @@ export default function ServicesSection({ limit }: { limit?: number }) {
 
       <div className="relative z-10 mx-auto max-w-7xl">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={motionInitial}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
@@ -124,7 +125,7 @@ export default function ServicesSection({ limit }: { limit?: number }) {
               <motion.article
                 id={service.slug}
                 key={service.id}
-                initial={{ opacity: 0, y: 24 }}
+                initial={motionInitial}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.35, delay: index * 0.05 }}

@@ -12,6 +12,7 @@ import { mediaUrl } from "@/api/uploads"
 import Header from "@/components/website/Header"
 import Footer from "@/components/website/Footer"
 import FloatingContact from "@/components/website/FloatingContact"
+import { motionInitial } from "@/lib/website-motion"
 
 type ApiBlog = {
   id: number
@@ -27,12 +28,14 @@ type ApiBlog = {
   category?: { id: number; title: string; slug: string }
 }
 
-const fadeUp = {
+import type { Variants } from "framer-motion"
+
+const fadeUp: Variants = {
   hidden: { opacity: 0, y: 24 },
   visible: (delay = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1], delay },
+    transition: { duration: 0.55, ease: "easeOut", delay },
   }),
 }
 
@@ -263,7 +266,7 @@ export default function BlogDetailPage({
 
           <motion.div
             variants={fadeUp}
-            initial="hidden"
+            initial={motionInitial}
             animate="visible"
             custom={0.02}
             className="relative mb-10 aspect-[16/9] w-full overflow-hidden rounded-3xl border border-[var(--border)] bg-[#071328] shadow-xl"
@@ -284,7 +287,7 @@ export default function BlogDetailPage({
           <article className="w-full">
             <motion.div
               variants={fadeUp}
-              initial="hidden"
+              initial={motionInitial}
               animate="visible"
               custom={0.04}
               className="mb-5 flex flex-wrap items-center gap-4 text-[12px] font-semibold text-[var(--muted)]"
@@ -312,7 +315,7 @@ export default function BlogDetailPage({
 
             <motion.h1
               variants={fadeUp}
-              initial="hidden"
+              initial={motionInitial}
               animate="visible"
               custom={0.08}
               className="mb-5 text-[clamp(24px,3.5vw,36px)] leading-tight font-black tracking-[-0.03em] text-[var(--foreground)]"
@@ -322,7 +325,7 @@ export default function BlogDetailPage({
 
             <motion.p
               variants={fadeUp}
-              initial="hidden"
+              initial={motionInitial}
               animate="visible"
               custom={0.12}
               className="mb-6 text-[16.5px] leading-[1.7] text-[var(--muted)]"
@@ -332,7 +335,7 @@ export default function BlogDetailPage({
 
             <motion.div
               variants={fadeUp}
-              initial="hidden"
+              initial={motionInitial}
               animate="visible"
               custom={0.16}
             >
@@ -342,7 +345,7 @@ export default function BlogDetailPage({
             {hashtags.length > 0 && (
               <motion.div
                 variants={fadeUp}
-                initial="hidden"
+                initial={motionInitial}
                 animate="visible"
                 custom={0.2}
                 className="mt-8 flex flex-wrap gap-2"
@@ -362,7 +365,7 @@ export default function BlogDetailPage({
 
             <motion.div
               variants={fadeUp}
-              initial="hidden"
+              initial={motionInitial}
               whileInView="visible"
               viewport={{ once: true }}
               className="relative overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-8 text-center"
@@ -398,7 +401,7 @@ export default function BlogDetailPage({
                 <motion.div
                   key={r.slug}
                   variants={fadeUp}
-                  initial="hidden"
+                  initial={motionInitial}
                   whileInView="visible"
                   viewport={{ once: true }}
                   custom={index * 0.1}

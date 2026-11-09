@@ -6,6 +6,7 @@ import { motion } from "framer-motion"
 import { Check, Zap, Server, ArrowRight } from "lucide-react"
 
 import { hostingApi } from "@/api/home/hosting"
+import { motionInitial } from "@/lib/website-motion"
 
 type ApiHostingPlan = {
   id: number
@@ -57,7 +58,7 @@ export default function HostingPackagesSection() {
 
       <div className="relative z-10 mx-auto max-w-7xl">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={motionInitial}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
@@ -127,7 +128,7 @@ export default function HostingPackagesSection() {
               return (
                 <motion.div
                   key={plan.id}
-                  initial={{ opacity: 0, y: 24 }}
+                  initial={motionInitial}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: index * 0.1 }}
@@ -190,7 +191,7 @@ export default function HostingPackagesSection() {
                   </div>
 
                   <a
-                    href="#contact"
+                    href="/contact"
                     className={`flex w-full items-center justify-center gap-2 rounded-2xl px-6 py-3.5 text-xs font-extrabold transition-all duration-200 ${
                       plan.popular
                         ? "bg-[#116cc6] text-white shadow-md hover:bg-[#0b559e] dark:bg-[#ffbc11] dark:text-[#122035] dark:hover:bg-[#eaaa00]"

@@ -121,6 +121,7 @@
 
   html {
     @apply max-w-[100vw] overflow-x-hidden scroll-smooth;
+    scrollbar-gutter: stable;
   }
 
   body {

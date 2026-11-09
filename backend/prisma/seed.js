@@ -339,6 +339,37 @@ const faqs = [
   },
 ]
 
+const achievements = [
+  {
+    slug: "business-partners",
+    count: "9+",
+    label: "Business Partners",
+    icon: "handshake",
+    order: 1,
+  },
+  {
+    slug: "professional-team",
+    count: "17+",
+    label: "Professional Team",
+    icon: "users",
+    order: 2,
+  },
+  {
+    slug: "completed-projects",
+    count: "9,709+",
+    label: "Completed Projects",
+    icon: "check",
+    order: 3,
+  },
+  {
+    slug: "happy-clients",
+    count: "4,079+",
+    label: "Happy Clients",
+    icon: "smile",
+    order: 4,
+  },
+]
+
 async function upsertByUnique(model, where, data, label) {
   const existing = await model.findFirst({ where })
   if (existing) {
@@ -432,6 +463,15 @@ async function main() {
       { slug: item.slug },
       item,
       `product: ${item.title}`,
+    )
+  }
+
+  for (const item of achievements) {
+    await upsertByUnique(
+      prisma.achievement,
+      { slug: item.slug },
+      item,
+      `achievement: ${item.label}`,
     )
   }
 }

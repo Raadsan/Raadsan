@@ -7,6 +7,7 @@ import Header from "@/components/website/Header";
 import Footer from "@/components/website/Footer";
 import FloatingContact from "@/components/website/FloatingContact";
 import ServicesSection from "@/components/website/ServicesSection";
+import { motionInitial } from "@/lib/website-motion";
 
 const steps = [
   ["01", "Discover", "We understand your goals, users, challenges, and the result you need."],
@@ -31,7 +32,7 @@ export default function ServicesPage() {
 
           <motion.h1
             id="services-hero-heading"
-            initial={{ opacity: 0, y: 24 }}
+            initial={motionInitial}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.08 }}
             className="relative z-10 max-w-[700px] text-[clamp(42px,5.4vw,72px)] font-extrabold leading-[1.12] tracking-[-0.045em] text-[var(--foreground)]"
@@ -41,7 +42,7 @@ export default function ServicesPage() {
           </motion.h1>
 
           <motion.p
-            initial={{ opacity: 0, y: 24 }}
+            initial={motionInitial}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.16 }}
             className="relative z-10 mt-5 max-w-[620px] text-[clamp(17px,1.5vw,20px)] leading-[1.65] text-[var(--muted)]"

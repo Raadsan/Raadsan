@@ -19,6 +19,7 @@ import { contactFormApi } from "@/api/contacts/form"
 import Header from "@/components/website/Header"
 import Footer from "@/components/website/Footer"
 import FloatingContact from "@/components/website/FloatingContact"
+import { motionInitial } from "@/lib/website-motion"
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 24 },
@@ -174,7 +175,7 @@ export default function ContactPage() {
           <motion.h1
             id="contact-hero-heading"
             variants={fadeUp}
-            initial="hidden"
+            initial={motionInitial}
             animate="visible"
             custom={0.08}
             className="relative z-10 text-[clamp(42px,5.4vw,72px)] font-extrabold leading-[1.12] tracking-[-0.045em] text-[var(--foreground)] max-w-[700px]"
@@ -187,7 +188,7 @@ export default function ContactPage() {
 
           <motion.p
             variants={fadeUp}
-            initial="hidden"
+            initial={motionInitial}
             animate="visible"
             custom={0.16}
             className="relative z-10 mt-5 max-w-[560px] text-[clamp(17px,1.5vw,20px)] leading-[1.65] text-[var(--muted)]"
@@ -208,7 +209,7 @@ export default function ContactPage() {
           <div className="relative z-10 mx-auto max-w-[1200px]">
             <motion.div
               variants={fadeUp}
-              initial="hidden"
+              initial={motionInitial}
               whileInView="visible"
               viewport={{ once: true }}
               custom={0}
@@ -217,7 +218,7 @@ export default function ContactPage() {
               {/* ── Left Card: Contact Info ── */}
               <motion.div
                 variants={fadeUp}
-                initial="hidden"
+                initial={motionInitial}
                 whileInView="visible"
                 viewport={{ once: true }}
                 custom={0.05}
@@ -364,7 +365,7 @@ export default function ContactPage() {
               {/* ── Right Card: Form ── */}
               <motion.div
                 variants={fadeUp}
-                initial="hidden"
+                initial={motionInitial}
                 whileInView="visible"
                 viewport={{ once: true }}
                 custom={0.12}
@@ -374,7 +375,7 @@ export default function ContactPage() {
               >
                 {formSubmitted ? (
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
+                    initial={motionInitial}
                     animate={{ opacity: 1, scale: 1 }}
                     className="flex flex-col items-center justify-center gap-5 py-16 text-center"
                   >

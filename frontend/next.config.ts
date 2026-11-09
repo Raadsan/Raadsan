@@ -9,6 +9,26 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: "/management",
+        destination: "/dashboard/management",
+      },
+      {
+        source: "/management/:path*",
+        destination: "/dashboard/management/:path*",
+      },
+      {
+        source: "/configuration",
+        destination: "/dashboard/configuration",
+      },
+      {
+        source: "/configuration/:path*",
+        destination: "/dashboard/configuration/:path*",
+      },
+    ]
+  },
 }
 
 export default nextConfig

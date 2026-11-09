@@ -31,6 +31,7 @@ import PartnersSection from "@/components/website/PartnersSection"
 import Footer from "@/components/website/Footer"
 import FloatingContact from "@/components/website/FloatingContact"
 import WhyChooseSection from "@/components/website/WhyChooseSection"
+import { motionInitial } from "@/lib/website-motion"
 
 const reveal = {
   hidden: { opacity: 0, y: 24 },
@@ -185,7 +186,7 @@ export default function AboutPage() {
           </div>
           <motion.h1
             id="about-hero-heading"
-            initial="hidden"
+            initial={motionInitial}
             animate="visible"
             variants={reveal}
             transition={{ duration: 0.55, delay: 0.08 }}
@@ -195,7 +196,7 @@ export default function AboutPage() {
             <span className="text-[#116cc6] dark:text-[#ffbc11]">Us</span>
           </motion.h1>
           <motion.p
-            initial="hidden"
+            initial={motionInitial}
             animate="visible"
             variants={reveal}
             transition={{ duration: 0.55, delay: 0.16 }}
@@ -213,7 +214,7 @@ export default function AboutPage() {
         >
           <div className="mx-auto grid max-w-[1280px] items-start gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
             <motion.div
-              initial="hidden"
+              initial={motionInitial}
               whileInView="visible"
               viewport={{ once: true }}
               variants={reveal}
@@ -238,7 +239,7 @@ export default function AboutPage() {
               )}
             </motion.div>
             <motion.div
-              initial="hidden"
+              initial={motionInitial}
               whileInView="visible"
               viewport={{ once: true }}
               variants={reveal}
@@ -291,7 +292,7 @@ export default function AboutPage() {
               return (
                 <motion.article
                   key={item.id}
-                  initial="hidden"
+                  initial={motionInitial}
                   whileInView="visible"
                   viewport={{ once: true }}
                   variants={reveal}
@@ -317,7 +318,7 @@ export default function AboutPage() {
         <section className="bg-white px-6 py-24 dark:bg-[#030d21]">
           <div className="mx-auto max-w-[1200px]">
             <motion.div
-              initial="hidden"
+              initial={motionInitial}
               whileInView="visible"
               viewport={{ once: true }}
               variants={reveal}
@@ -334,7 +335,7 @@ export default function AboutPage() {
                 return (
                   <motion.article
                     key={item.id}
-                    initial="hidden"
+                    initial={motionInitial}
                     whileInView="visible"
                     viewport={{ once: true }}
                     variants={reveal}

@@ -8,6 +8,8 @@ type Props = {
   params: Promise<{ page: string }>
 }
 
+export const dynamicParams = true
+
 export function generateStaticParams() {
   return pageModuleKeys.map((page) => ({ page }))
 }

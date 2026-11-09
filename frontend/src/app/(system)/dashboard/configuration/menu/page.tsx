@@ -1,12 +1,5 @@
-import { DashboardPageShell } from "@/components/system/dashboard-page-shell"
+import { MenuTable } from "@/components/system/configuration/menu-table"
 
 export default function MenuPage() {
-  return (
-    <DashboardPageShell
-      title="Menu"
-      description="Configure navigation menus available in the admin panel."
-      badge="Configuration"
-      actionLabel="Add menu item"
-    />
-  )
+  return <MenuTable />
 }

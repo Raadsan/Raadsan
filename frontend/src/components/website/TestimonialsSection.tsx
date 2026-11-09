@@ -6,6 +6,7 @@ import { motion } from "framer-motion"
 import { Star, Quote } from "lucide-react"
 
 import { testimonialsApi } from "@/api/home/testimonials"
+import { motionInitial } from "@/lib/website-motion"
 import { mediaUrl } from "@/api/uploads"
 
 type ApiTestimonial = {
@@ -89,7 +90,7 @@ export default function TestimonialsSection() {
 
       <div className="relative z-10 mx-auto max-w-[1320px] px-6">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={motionInitial}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}

@@ -22,14 +22,51 @@ model User {
 }
 
 model Role {
-  id          Int      @id @default(autoincrement())
-  name        String   @db.VarChar(160)
-  description String?  @db.VarChar(500)
-  users       User[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id              Int              @id @default(autoincrement())
+  name            String           @db.VarChar(160)
+  description     String?          @db.VarChar(500)
+  users           User[]
+  rolePermissions RolePermission[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 
   @@map("roles")
+}
+
+model Menu {
+  id              Int              @id @default(autoincrement())
+  title           String           @db.VarChar(160)
+  url             String?          @db.VarChar(255)
+  icon            String?          @db.VarChar(100)
+  order           Int              @default(0)
+  parentId        Int?
+  parent          Menu?            @relation("MenuHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children        Menu[]           @relation("MenuHierarchy")
+  rolePermissions RolePermission[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([parentId])
+  @@map("menus")
+}
+
+model RolePermission {
+  id        Int      @id @default(autoincrement())
+  roleId    Int
+  role      Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  menuId    Int
+  menu      Menu     @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  canView   Boolean  @default(true)
+  canCreate Boolean  @default(false)
+  canEdit   Boolean  @default(false)
+  canDelete Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([roleId, menuId])
+  @@index([roleId])
+  @@index([menuId])
+  @@map("role_permissions")
 }
 
 // home models

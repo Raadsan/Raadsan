@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query"
 import { motion } from "framer-motion"
 
 import { partnersApi } from "@/api/home/partners"
+import { motionInitial } from "@/lib/website-motion"
 import { mediaUrl } from "@/api/uploads"
 
 type ApiPartner = {
@@ -45,7 +46,7 @@ export default function PartnersSection() {
     >
       <div className="relative z-10 mx-auto max-w-[1320px] px-6">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={motionInitial}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.5 }}
           transition={{ duration: 0.5 }}

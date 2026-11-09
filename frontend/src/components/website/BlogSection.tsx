@@ -7,6 +7,7 @@ import { motion } from "framer-motion"
 import { Calendar, Clock, ArrowRight, User } from "lucide-react"
 
 import { blogsApi } from "@/api/home/blogs"
+import { motionInitial } from "@/lib/website-motion"
 import { mediaUrl } from "@/api/uploads"
 
 type ApiBlog = {
@@ -47,7 +48,7 @@ export default function BlogSection() {
     >
       <div className="relative z-10 mx-auto max-w-[1320px]">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={motionInitial}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
@@ -73,7 +74,7 @@ export default function BlogSection() {
               return (
                 <motion.article
                   key={post.id}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={motionInitial}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: index * 0.08 }}

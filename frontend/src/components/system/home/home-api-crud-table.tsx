@@ -4,16 +4,33 @@ import { useMemo, useState, type ComponentType } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { IconEye, IconPencil, IconPlus, IconTrash } from "@tabler/icons-react"
 import {
+  Award,
+  Briefcase,
+  Building2,
+  CheckCircle2,
+  Clock,
+  Code2,
+  Cpu,
   Eye,
+  FolderCheck,
   Globe2,
+  GraduationCap,
+  Heart,
   HeartHandshake,
   LifeBuoy,
   Lightbulb,
   LockKeyhole,
   Medal,
+  Rocket,
   Settings2,
   ShieldCheck,
+  Smile,
+  Sparkles,
+  Star,
   Target,
+  ThumbsUp,
+  TrendingUp,
+  Trophy,
   Users,
   Zap,
   type LucideProps,
@@ -63,10 +80,41 @@ const CRUD_ICON_MAP: Record<string, LucideIcon> = {
   lockkeyhole: LockKeyhole,
   globe: Globe2,
   globe2: Globe2,
+  trophy: Trophy,
+  award: Award,
+  star: Star,
+  briefcase: Briefcase,
+  check: CheckCircle2,
+  checkcircle: CheckCircle2,
+  "check-circle": CheckCircle2,
+  circlecheck: CheckCircle2,
+  folder: FolderCheck,
+  foldercheck: FolderCheck,
+  "folder-check": FolderCheck,
+  sparkles: Sparkles,
+  thumbsup: ThumbsUp,
+  "thumbs-up": ThumbsUp,
+  smile: Smile,
+  clock: Clock,
+  trendingup: TrendingUp,
+  "trending-up": TrendingUp,
+  heart: Heart,
+  building: Building2,
+  building2: Building2,
+  graduationcap: GraduationCap,
+  "graduation-cap": GraduationCap,
+  code: Code2,
+  cpu: Cpu,
+  rocket: Rocket,
 }
 
 function resolveCrudIcon(name: string): LucideIcon | null {
-  return CRUD_ICON_MAP[String(name || "").toLowerCase()] || null
+  const normalized = String(name || "").toLowerCase().trim().replace(/\s+/g, "-")
+  return (
+    CRUD_ICON_MAP[normalized] ||
+    CRUD_ICON_MAP[normalized.replace(/-/g, "")] ||
+    null
+  )
 }
 
 export type CrudFieldOption = {
@@ -305,14 +353,41 @@ export function HomeApiCrudTable({
                   <span className="text-muted-foreground">—</span>
                 )
               }
-              if (field.type === "icon") {
-                const Icon = resolveCrudIcon(
-                  String(row.original[field.key] ?? ""),
-                )
-                return Icon ? (
-                  <Icon className="size-5 text-primary" aria-hidden />
-                ) : (
-                  <span className="text-muted-foreground">—</span>
+              if (field.type === "icon" || field.key === "icon") {
+                const raw = String(row.original[field.key] ?? "").trim()
+                const Icon = resolveCrudIcon(raw)
+                if (Icon) {
+                  return (
+                    <div className="flex items-center gap-2">
+                      <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        <Icon className="size-4" aria-hidden />
+                      </div>
+                      <span className="text-xs font-medium text-muted-foreground capitalize">
+                        {raw}
+                      </span>
+                    </div>
+                  )
+                }
+                if (
+                  raw &&
+                  (raw.startsWith("http") ||
+                    raw.startsWith("/") ||
+                    raw.startsWith("blob"))
+                ) {
+                  const src = mediaUrl(raw)
+                  return (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={src}
+                      alt=""
+                      className="size-10 rounded-lg object-cover"
+                    />
+                  )
+                }
+                return (
+                  <span className="block max-w-[240px] truncate font-medium">
+                    {raw || "—"}
+                  </span>
                 )
               }
               if (field.type === "select") {
@@ -453,15 +528,39 @@ export function HomeApiCrudTable({
                       ) : (
                         <p className="text-sm font-medium">—</p>
                       )
-                    ) : field.type === "icon" ? (
+                    ) : field.type === "icon" || field.key === "icon" ? (
                       (() => {
-                        const Icon = resolveCrudIcon(
-                          String(viewing[field.key] ?? ""),
-                        )
-                        return Icon ? (
-                          <Icon className="size-8 text-primary" aria-hidden />
-                        ) : (
-                          <p className="text-sm font-medium">—</p>
+                        const val = String(viewing[field.key] ?? "").trim()
+                        const Icon = resolveCrudIcon(val)
+                        if (Icon) {
+                          return (
+                            <div className="mt-1 flex items-center gap-2">
+                              <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                                <Icon className="size-5" aria-hidden />
+                              </div>
+                              <span className="text-sm font-medium capitalize">
+                                {val}
+                              </span>
+                            </div>
+                          )
+                        }
+                        if (
+                          val &&
+                          (val.startsWith("http") ||
+                            val.startsWith("/") ||
+                            val.startsWith("blob"))
+                        ) {
+                          return (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={mediaUrl(val)}
+                              alt={field.label}
+                              className="size-16 rounded-xl object-cover"
+                            />
+                          )
+                        }
+                        return (
+                          <p className="text-sm font-medium">{val || "—"}</p>
                         )
                       })()
                     ) : field.type === "select" ? (

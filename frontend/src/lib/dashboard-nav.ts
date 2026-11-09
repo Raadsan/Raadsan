@@ -137,11 +137,11 @@ export function getPageSection(
 export function getSectionUrl(page: PageModuleKey, sectionSlug: string) {
   const section = getPageSection(page, sectionSlug)
   if (section?.url) return section.url
-  return `/dashboard/management/${page}/${sectionSlug}`
+  return `/management/${page}/${sectionSlug}`
 }
 
 export function getPageUrl(page: PageModuleKey) {
-  return `/dashboard/management/${page}`
+  return `/management/${page}`
 }
 
 /** @deprecated use pageModules home sections */
@@ -158,23 +158,39 @@ export const managementItems = pageModules.map((item) => ({
 }))
 
 export const configurationItems = [
-  { title: "Roles", url: "/dashboard/configuration/roles" },
-  { title: "Users", url: "/dashboard/configuration/users" },
-  { title: "Menu", url: "/dashboard/configuration/menu" },
+  { title: "Roles", url: "/configuration/roles" },
+  { title: "Users", url: "/configuration/users" },
+  { title: "Menu", url: "/configuration/menu" },
   {
     title: "Role Permission",
-    url: "/dashboard/configuration/role-permission",
+    url: "/configuration/role-permission",
   },
 ] as const
 
 export function getModuleFromPath(pathname: string): ModuleKey {
   for (const key of pageModuleKeys) {
     const base = `/dashboard/management/${key}`
-    if (pathname === base || pathname.startsWith(`${base}/`)) {
+    const shortBase = `/management/${key}`
+    if (
+      pathname === base ||
+      pathname.startsWith(`${base}/`) ||
+      pathname === shortBase ||
+      pathname.startsWith(`${shortBase}/`)
+    ) {
       return key
     }
   }
-  if (pathname.startsWith("/dashboard/management")) return "management"
-  if (pathname.startsWith("/dashboard/configuration")) return "configuration"
+  if (
+    pathname.startsWith("/dashboard/management") ||
+    pathname.startsWith("/management")
+  ) {
+    return "management"
+  }
+  if (
+    pathname.startsWith("/dashboard/configuration") ||
+    pathname.startsWith("/configuration")
+  ) {
+    return "configuration"
+  }
   return "main"
 }

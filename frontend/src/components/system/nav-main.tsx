@@ -12,7 +12,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { cn } from "@/app/lib/utils"
+import { cn } from "@/lib/utils"
 
 type NavIcon = LucideIcon | Icon
 
@@ -50,7 +50,7 @@ export function NavMain({ items }: { items: ModuleNavItem[] }) {
                     className={cn(itemButtonClass, "cursor-pointer")}
                     onClick={item.onOpenModule}
                   >
-                    {item.icon ? <item.icon stroke={1.6} /> : null}
+                    {item.icon ? <item.icon strokeWidth={1.6} /> : null}
                     <span>{item.title}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -66,7 +66,7 @@ export function NavMain({ items }: { items: ModuleNavItem[] }) {
                   className={itemButtonClass}
                 >
                   <Link href={item.url ?? "#"}>
-                    {item.icon ? <item.icon stroke={1.6} /> : null}
+                    {item.icon ? <item.icon strokeWidth={1.6} /> : null}
                     <span>{item.title}</span>
                   </Link>
                 </SidebarMenuButton>

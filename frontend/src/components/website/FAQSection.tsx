@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { HelpCircle, Plus } from "lucide-react"
 
 import { faqsApi } from "@/api/home/faqs"
+import { motionInitial } from "@/lib/website-motion"
 
 type ApiFaq = {
   id: number
@@ -38,7 +39,7 @@ export default function FAQSection() {
 
       <div className="relative z-10 mx-auto max-w-[1320px] px-6">
         <motion.div
-          initial={{ opacity: 0, y: 22 }}
+          initial={motionInitial}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.5 }}
           transition={{ duration: 0.5 }}
@@ -72,7 +73,7 @@ export default function FAQSection() {
               return (
                 <motion.div
                   key={item.id}
-                  initial={{ opacity: 0, y: 18 }}
+                  initial={motionInitial}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.35 }}
                   transition={{ duration: 0.4, delay: index * 0.05 }}

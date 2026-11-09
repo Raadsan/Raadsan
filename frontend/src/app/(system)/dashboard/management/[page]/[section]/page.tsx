@@ -26,6 +26,8 @@ type Props = {
   params: Promise<{ page: string; section: string }>
 }
 
+export const dynamicParams = true
+
 export function generateStaticParams() {
   return pageModuleKeys.flatMap((page) => {
     const pageModule = getPageModule(page)

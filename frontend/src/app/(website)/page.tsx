@@ -14,6 +14,7 @@ import TestimonialsSection from "@/components/website/TestimonialsSection";
 import FAQSection from "@/components/website/FAQSection";
 import Footer from "@/components/website/Footer";
 import FloatingContact from "@/components/website/FloatingContact";
+import { motionInitial } from "@/lib/website-motion";
 
 export default function Home() {
   return (
@@ -31,7 +32,7 @@ export default function Home() {
         >
           {/* Copy */}
           <motion.div
-            initial={{ opacity: 0, x: -32 }}
+            initial={motionInitial}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
             className="relative z-[2] pl-[4px] max-[900px]:text-center"
@@ -63,7 +64,7 @@ export default function Home() {
               </Link>
               <Link
                 className="inline-flex items-center justify-center gap-[22px] min-h-[60px] px-7 border-2 border-[#116cc6] rounded-2xl text-[16px] font-bold transition-all duration-180 bg-transparent text-[#116cc6] hover:bg-[#116cc6]/10 hover:-translate-y-[2px] dark:border-[#ffbc11] dark:bg-transparent dark:text-[#ffbc11] dark:hover:bg-[#ffbc11]/10 max-[480px]:w-full max-[480px]:min-h-[54px]"
-                href="#contact"
+                href="/contact"
               >
                 Let&apos;s Talk{" "}
                 <span className="text-[25px] leading-none transition-transform duration-180" aria-hidden="true">→</span>
@@ -73,7 +74,7 @@ export default function Home() {
 
           {/* Visual */}
           <motion.div
-            initial={{ opacity: 0, x: 34, scale: 0.97 }}
+            initial={motionInitial}
             animate={{ opacity: 1, x: 0, scale: 1 }}
             transition={{ duration: 0.75, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
             className="relative min-w-0 aspect-[3/2] max-[900px]:w-[min(100%,700px)] max-[900px]:mx-auto"

@@ -14,7 +14,11 @@ export async function getRoles(_req, res) {
   try {
     const roles = await prisma.role.findMany({
       orderBy: { createdAt: "asc" },
-      include: { _count: { select: { users: true } } },
+      include: {
+        _count: {
+          select: { users: true, rolePermissions: true },
+        },
+      },
     })
     res.json(roles)
   } catch (error) {

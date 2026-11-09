@@ -26,7 +26,12 @@ export function AchievementsTable({ title, description }: Props) {
           half: true,
         },
         { key: "slug", label: "Slug", half: true },
-        { key: "icon", label: "Icon", type: "image" },
+        {
+          key: "icon",
+          label: "Icon",
+          half: true,
+          placeholder: "users | trophy | award | briefcase | check | star",
+        },
       ]}
     />
   )

@@ -1,3 +1,7 @@
+"use client"
+
+import { LazyMotion, domAnimation } from "framer-motion"
+
 /**
  * Website routes group — public pages.
  * URLs stay the same: /, /about, /services, ...
@@ -7,5 +11,5 @@ export default function WebsiteLayout({
 }: {
   children: React.ReactNode
 }) {
-  return children
+  return <LazyMotion features={domAnimation}>{children}</LazyMotion>
 }
