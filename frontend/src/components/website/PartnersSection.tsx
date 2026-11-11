@@ -12,6 +12,7 @@ type ApiPartner = {
   id: number
   title: string
   image: string
+  imageDark?: string | null
 }
 
 export default function PartnersSection() {
@@ -83,7 +84,9 @@ export default function PartnersSection() {
               }}
             >
               {marqueePartners.map((partner, index) => {
-                const src = mediaUrl(partner.image)
+                const src = mediaUrl(
+                  isDark && partner.imageDark ? partner.imageDark : partner.image,
+                )
                 return (
                   <div
                     key={`${partner.id}-${index}`}

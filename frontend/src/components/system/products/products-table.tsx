@@ -63,6 +63,37 @@ const emptyForm: FormState = {
   features: [{ ...emptyFeature }],
 }
 
+function productPayload(form: FormState) {
+  const features = form.features
+    .map((feature) => {
+      const title = feature.title.trim()
+      return {
+        icon: (feature.icon.trim() || iconFromFeatureTitle(title, "monitor")).trim(),
+        title,
+        description: feature.description.trim(),
+      }
+    })
+    .filter((feature) => feature.title && feature.description)
+
+  return {
+    order: Number(form.order) || 0,
+    title: form.title.trim(),
+    slug: form.slug.trim(),
+    description: form.description.trim(),
+    features,
+  }
+}
+
+function changedFields<T extends Record<string, unknown>>(next: T, previous: T) {
+  const partial: Partial<T> = {}
+  for (const key of Object.keys(next) as (keyof T)[]) {
+    if (JSON.stringify(next[key]) !== JSON.stringify(previous[key])) {
+      partial[key] = next[key]
+    }
+  }
+  return partial
+}
+
 function normalizeFeatures(features: unknown): ProductFeature[] {
   if (!Array.isArray(features) || features.length === 0) {
     return [{ ...emptyFeature }]
@@ -86,6 +117,7 @@ export function ProductsTable({
   const queryClient = useQueryClient()
   const [open, setOpen] = useState(false)
   const [editingId, setEditingId] = useState<number | null>(null)
+  const [baseline, setBaseline] = useState<FormState>(emptyForm)
   const [form, setForm] = useState<FormState>(emptyForm)
   const [search, setSearch] = useState("")
 
@@ -114,7 +146,7 @@ export function ProductsTable({
     }: {
       id: number
       payload: Record<string, unknown>
-    }) => productsApi.update(id, payload),
+    }) => productsApi.update(id, payload as Record<string, unknown>),
     onSuccess: async () => {
       await invalidate()
       setOpen(false)
@@ -151,13 +183,18 @@ export function ProductsTable({
   }
 
   const openEdit = (product: Product) => {
-    setEditingId(product.id)
-    setForm({
+    const next: FormState = {
       order: String(product.order ?? 0),
       title: product.title ?? "",
       slug: product.slug ?? "",
       description: product.description ?? "",
       features: normalizeFeatures(product.features),
+    }
+    setEditingId(product.id)
+    setForm(next)
+    setBaseline({
+      ...next,
+      features: next.features.map((feature) => ({ ...feature })),
     })
     setOpen(true)
   }
@@ -202,41 +239,27 @@ export function ProductsTable({
   }
 
   const handleSave = () => {
-    const titleValue = form.title.trim()
-    const slugValue = form.slug.trim()
-    const descriptionValue = form.description.trim()
-    const features = form.features
-      .map((feature) => {
-        const title = feature.title.trim()
-        return {
-          icon: (
-            feature.icon.trim() || iconFromFeatureTitle(title, "monitor")
-          ).trim(),
-          title,
-          description: feature.description.trim(),
-        }
-      })
-      .filter((feature) => feature.title && feature.description)
+    const payload = productPayload(form)
 
-    if (!titleValue || !slugValue || !descriptionValue) {
-      toast.error("Please fill required fields")
-      return
-    }
-    if (features.length === 0) {
-      toast.error("Add at least one feature with title and description")
+    if (editingId == null) {
+      if (!payload.title || !payload.slug || !payload.description) {
+        toast.error("Please fill required fields")
+        return
+      }
+      if (payload.features.length === 0) {
+        toast.error("Add at least one feature with title and description")
+        return
+      }
+      createMutation.mutate(payload)
       return
     }
 
-    const payload = {
-      order: Number(form.order) || 0,
-      title: titleValue,
-      slug: slugValue,
-      description: descriptionValue,
-      features,
+    const partial = changedFields(payload, productPayload(baseline))
+    if (Object.keys(partial).length === 0) {
+      toast.error("No changes to save")
+      return
     }
-
-    if (editingId == null) createMutation.mutate(payload)
-    else updateMutation.mutate({ id: editingId, payload })
+    updateMutation.mutate({ id: editingId, payload: partial })
   }
 
   const saving = createMutation.isPending || updateMutation.isPending

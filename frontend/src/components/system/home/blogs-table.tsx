@@ -108,6 +108,34 @@ function splitContentAndHashtags(raw: string) {
   }
 }
 
+function blogPayload(form: BlogForm) {
+  const title = form.title.trim()
+  const split = splitContentAndHashtags(form.content)
+  return {
+    title,
+    slug: form.slug.trim() || toSlug(title),
+    excerpt: form.excerpt.trim() || firstParagraph(split.content),
+    content: split.content,
+    hashtags: split.hashtags,
+    categoryId: Number(form.categoryId),
+    date: form.date,
+    readTime: form.readTime.trim() || "5 min read",
+    author: form.author.trim(),
+    image: form.image.trim(),
+    order: Number(form.order) || 0,
+  }
+}
+
+function changedFields<T extends Record<string, unknown>>(next: T, previous: T) {
+  const partial: Partial<T> = {}
+  for (const key of Object.keys(next) as (keyof T)[]) {
+    if (JSON.stringify(next[key]) !== JSON.stringify(previous[key])) {
+      partial[key] = next[key]
+    }
+  }
+  return partial
+}
+
 function firstParagraph(value: string) {
   return (
     value
@@ -128,6 +156,7 @@ export function BlogsTable({ title, description }: Props) {
   const [viewOpen, setViewOpen] = useState(false)
   const [viewing, setViewing] = useState<Blog | null>(null)
   const [editingId, setEditingId] = useState<number | null>(null)
+  const [baseline, setBaseline] = useState<BlogForm>(emptyForm)
   const [form, setForm] = useState<BlogForm>(emptyForm)
   const [uploadingImage, setUploadingImage] = useState(false)
 
@@ -161,7 +190,7 @@ export function BlogsTable({ title, description }: Props) {
     }: {
       id: number
       payload: Record<string, unknown>
-    }) => blogsApi.update(id, payload),
+    }) => blogsApi.update(id, payload as Record<string, unknown>),
     onSuccess: async () => {
       await invalidate()
       setOpen(false)
@@ -190,8 +219,7 @@ export function BlogsTable({ title, description }: Props) {
   }
 
   const openEdit = (row: Blog) => {
-    setEditingId(row.id)
-    setForm({
+    const next: BlogForm = {
       title: row.title,
       slug: row.slug,
       excerpt: row.excerpt,
@@ -209,7 +237,10 @@ export function BlogsTable({ title, description }: Props) {
       author: row.author,
       image: row.image,
       order: String(row.order ?? 0),
-    })
+    }
+    setEditingId(row.id)
+    setForm(next)
+    setBaseline(next)
     setOpen(true)
   }
 
@@ -219,41 +250,34 @@ export function BlogsTable({ title, description }: Props) {
   }
 
   const handleSave = () => {
-    const title = form.title.trim()
-    const split = splitContentAndHashtags(form.content)
+    const payload = blogPayload(form)
 
-    const payload = {
-      title,
-      slug: form.slug.trim() || toSlug(title),
-      excerpt: form.excerpt.trim() || firstParagraph(split.content),
-      content: split.content,
-      hashtags: split.hashtags,
-      categoryId: Number(form.categoryId),
-      date: form.date,
-      readTime: form.readTime.trim() || "5 min read",
-      author: form.author.trim(),
-      image: form.image.trim(),
-      order: Number(form.order) || 0,
-    }
-
-    if (
-      !payload.title ||
-      !payload.slug ||
-      !payload.excerpt ||
-      !payload.content ||
-      !payload.categoryId ||
-      !payload.date ||
-      !payload.author ||
-      !payload.image
-    ) {
-      toast.error(
-        "Title, content, category, date, author, and image are required",
-      )
+    if (editingId == null) {
+      if (
+        !payload.title ||
+        !payload.slug ||
+        !payload.excerpt ||
+        !payload.content ||
+        !payload.categoryId ||
+        !payload.date ||
+        !payload.author ||
+        !payload.image
+      ) {
+        toast.error(
+          "Title, content, category, date, author, and image are required",
+        )
+        return
+      }
+      createMutation.mutate(payload)
       return
     }
 
-    if (editingId == null) createMutation.mutate(payload)
-    else updateMutation.mutate({ id: editingId, payload })
+    const partial = changedFields(payload, blogPayload(baseline))
+    if (Object.keys(partial).length === 0) {
+      toast.error("No changes to save")
+      return
+    }
+    updateMutation.mutate({ id: editingId, payload: partial })
   }
 
   const saving = createMutation.isPending || updateMutation.isPending

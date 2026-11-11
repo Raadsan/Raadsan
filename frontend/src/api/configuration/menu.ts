@@ -47,7 +47,7 @@ export const menuApi = {
     return data
   },
 
-  update: async (id: number, payload: MenuPayload): Promise<MenuItem> => {
+  update: async (id: number, payload: Partial<MenuPayload>): Promise<MenuItem> => {
     const { data } = await api.put(`/api/menus/${id}`, payload)
     return data
   },

@@ -163,33 +163,38 @@ export async function updateMenu(req, res) {
   const id = parseId(req.params.id)
   if (!id) return res.status(400).json({ message: "Invalid id" })
 
-  const title = str(req.body.title)
-  const url = str(req.body.url) || null
-  const icon = str(req.body.icon) || null
-  const order = Number.isInteger(Number(req.body.order)) ? Number(req.body.order) : 0
-  const parentId = parseId(req.body.parentId)
+  const data = {}
 
-  if (!title) return res.status(422).json({ message: "Title is required" })
-
-  if (parentId === id) {
-    return res.status(400).json({ message: "A menu item cannot be its own parent" })
+  if (req.body.title !== undefined) {
+    const title = str(req.body.title)
+    if (!title) return res.status(422).json({ message: "Title cannot be empty" })
+    data.title = title
+  }
+  if (req.body.url !== undefined) data.url = str(req.body.url) || null
+  if (req.body.icon !== undefined) data.icon = str(req.body.icon) || null
+  if (req.body.order !== undefined) {
+    data.order = Number.isInteger(Number(req.body.order)) ? Number(req.body.order) : 0
+  }
+  if (req.body.parentId !== undefined) {
+    const parentId = parseId(req.body.parentId)
+    if (parentId === id) {
+      return res.status(400).json({ message: "A menu item cannot be its own parent" })
+    }
+    if (parentId) {
+      const parent = await prisma.menu.findUnique({ where: { id: parentId } })
+      if (!parent) return res.status(404).json({ message: "Parent menu not found" })
+    }
+    data.parentId = parentId || null
   }
 
-  if (parentId) {
-    const parent = await prisma.menu.findUnique({ where: { id: parentId } })
-    if (!parent) return res.status(404).json({ message: "Parent menu not found" })
+  if (Object.keys(data).length === 0) {
+    return res.status(400).json({ message: "No fields to update" })
   }
 
   try {
     const menu = await prisma.menu.update({
       where: { id },
-      data: {
-        title,
-        url,
-        icon,
-        order,
-        parentId: parentId || null,
-      },
+      data,
       include: {
         parent: {
           select: { id: true, title: true },

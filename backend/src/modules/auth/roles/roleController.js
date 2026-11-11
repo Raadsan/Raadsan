@@ -65,15 +65,24 @@ export async function updateRole(req, res) {
   const id = parseId(req.params.id)
   if (!id) return res.status(400).json({ message: "Invalid id" })
 
-  const name = str(req.body.name)
-  const description = str(req.body.description) || null
+  const data = {}
+  if (req.body.name !== undefined) {
+    const name = str(req.body.name)
+    if (!name) return res.status(422).json({ message: "name cannot be empty" })
+    data.name = name
+  }
+  if (req.body.description !== undefined) {
+    data.description = str(req.body.description) || null
+  }
 
-  if (!name) return res.status(422).json({ message: "name is required" })
+  if (Object.keys(data).length === 0) {
+    return res.status(400).json({ message: "No fields to update" })
+  }
 
   try {
     const role = await prisma.role.update({
       where: { id },
-      data: { name, description },
+      data,
     })
     res.json(role)
   } catch (error) {

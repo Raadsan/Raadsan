@@ -16,7 +16,10 @@ export const rolesApi = {
     return data
   },
 
-  update: async (id: number, payload: { name: string; description?: string }) => {
+  update: async (
+    id: number,
+    payload: { name?: string; description?: string | null },
+  ) => {
     const { data } = await api.put(`/api/roles/${id}`, payload)
     return data
   },

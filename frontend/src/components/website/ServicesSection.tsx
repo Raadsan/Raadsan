@@ -109,7 +109,7 @@ export default function ServicesSection({ limit }: { limit?: number }) {
         >
           <h2
             id="services-title"
-            className="text-[clamp(34px,4vw,48px)] font-black tracking-[-0.035em] text-[var(--foreground)]"
+            className="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl dark:text-white"
           >
             Our Services
           </h2>
@@ -140,7 +140,7 @@ export default function ServicesSection({ limit }: { limit?: number }) {
                   </span>
                 </div>
 
-                <h3 className="mb-2.5 text-xl font-extrabold text-[var(--foreground)] transition-colors group-hover:text-[#116cc6] dark:group-hover:text-[#ffbc11]">
+                <h3 className="mb-2.5 text-lg font-semibold text-[var(--foreground)] transition-colors group-hover:text-[#116cc6] dark:group-hover:text-[#ffbc11]">
                   {service.title}
                 </h3>
 

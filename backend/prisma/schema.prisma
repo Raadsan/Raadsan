@@ -111,10 +111,11 @@ model Achievement {
 }
 
 model Partner {
-  id    Int    @id @default(autoincrement())
-  title String @db.VarChar(160)
-  image String @db.VarChar(500)
-  order Int    @default(0)
+  id        Int     @id @default(autoincrement())
+  title     String  @db.VarChar(160)
+  image     String  @db.VarChar(500)
+  imageDark String? @db.VarChar(500)
+  order     Int     @default(0)
 
   @@map("partners")
 }

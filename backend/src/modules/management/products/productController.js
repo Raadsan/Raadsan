@@ -156,12 +156,8 @@ export async function updateProduct(req, res) {
       data.description = str(req.body.description)
     }
     if (req.body.features !== undefined) {
-      data.features = parseFeatures(req.body.features)
-      if (data.features.length === 0) {
-        return res.status(400).json({
-          message: "At least one feature is required (icon|title|description)",
-        })
-      }
+      const features = parseFeatures(req.body.features)
+      if (features.length > 0) data.features = features
     }
     if (req.body.order !== undefined) data.order = Number(req.body.order) || 0
 

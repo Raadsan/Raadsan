@@ -19,7 +19,8 @@ export function PartnersTable({ title, description }: Props) {
       fields={[
         { key: "order", label: "Order", type: "number", half: true },
         { key: "title", label: "Title", half: true },
-        { key: "image", label: "Image", type: "image" },
+        { key: "image", label: "Light mode image", type: "image" },
+        { key: "imageDark", label: "Dark mode image", type: "image" },
       ]}
     />
   )

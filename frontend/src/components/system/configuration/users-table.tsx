@@ -67,6 +67,8 @@ export function UsersTable() {
 
   const [open, setOpen] = useState(false)
   const [editingId, setEditingId] = useState<number | null>(null)
+  const [roleFilter, setRoleFilter] = useState("all")
+  const [baseline, setBaseline] = useState<FormState>(emptyForm)
   const [form, setForm] = useState<FormState>(emptyForm)
 
   const { data: users = [], isLoading } = useQuery({
@@ -99,14 +101,19 @@ export function UsersTable() {
   })
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, payload }: { id: number; payload: FormState }) =>
-      usersApi.update(id, {
-        fullName: payload.fullName || undefined,
-        email: payload.email || undefined,
-        password: payload.password || undefined,
-        confirmPass: payload.confirmPass || undefined,
-        roleId: payload.roleId ? Number(payload.roleId) : undefined,
-      }),
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: number
+      payload: {
+        fullName?: string
+        email?: string
+        password?: string
+        confirmPass?: string
+        roleId?: number
+      }
+    }) => usersApi.update(id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] })
       toast.success("User updated successfully")
@@ -135,33 +142,69 @@ export function UsersTable() {
   }
 
   const openEdit = (user: User) => {
-    setEditingId(user.id)
-    setForm({
+    const next: FormState = {
       fullName: user.fullName,
       email: user.email,
       password: "",
       confirmPass: "",
       roleId: String(user.roleId),
-    })
+    }
+    setEditingId(user.id)
+    setForm(next)
+    setBaseline(next)
     setOpen(true)
   }
 
   const handleSave = () => {
-    if (!form.fullName.trim()) { toast.error("Full name is required"); return }
-    if (!form.email.trim()) { toast.error("Email is required"); return }
-    if (!form.roleId) { toast.error("Role is required"); return }
     if (editingId == null) {
+      if (!form.fullName.trim()) { toast.error("Full name is required"); return }
+      if (!form.email.trim()) { toast.error("Email is required"); return }
+      if (!form.roleId) { toast.error("Role is required"); return }
       if (!form.password) { toast.error("Password is required"); return }
       if (form.password !== form.confirmPass) { toast.error("Passwords do not match"); return }
-    }
-    if (editingId == null) {
       createMutation.mutate(form)
-    } else {
-      updateMutation.mutate({ id: editingId, payload: form })
+      return
     }
+
+    if ((form.password || form.confirmPass) && form.password !== form.confirmPass) {
+      toast.error("Passwords do not match")
+      return
+    }
+
+    const payload: {
+      fullName?: string
+      email?: string
+      password?: string
+      confirmPass?: string
+      roleId?: number
+    } = {}
+    if (form.fullName.trim() && form.fullName.trim() !== baseline.fullName.trim()) {
+      payload.fullName = form.fullName.trim()
+    }
+    if (form.email.trim() && form.email.trim() !== baseline.email.trim()) {
+      payload.email = form.email.trim()
+    }
+    if (form.roleId && form.roleId !== baseline.roleId) {
+      payload.roleId = Number(form.roleId)
+    }
+    if (form.password) {
+      payload.password = form.password
+      payload.confirmPass = form.confirmPass
+    }
+    if (Object.keys(payload).length === 0) {
+      toast.error("No changes to save")
+      return
+    }
+    updateMutation.mutate({ id: editingId, payload })
   }
 
   const isSaving = createMutation.isPending || updateMutation.isPending
+
+  const roleOptions = roles as { id: number; name: string }[]
+  const filteredUsers = useMemo(() => {
+    if (roleFilter === "all") return users
+    return users.filter((user) => String(user.roleId) === roleFilter)
+  }, [users, roleFilter])
 
   const columns = useMemo(
     () =>
@@ -251,15 +294,37 @@ export function UsersTable() {
         <CardHeader>
           <CardTitle>Users List</CardTitle>
           <CardDescription>
-            {isLoading ? "Loading users..." : `${users.length} user${users.length !== 1 ? "s" : ""} registered`}
+            {isLoading
+              ? "Loading users..."
+              : roleFilter === "all"
+                ? `${users.length} user${users.length !== 1 ? "s" : ""} registered`
+                : `${filteredUsers.length} of ${users.length} users`}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <DataTable
             columns={columns}
-            data={users}
+            data={filteredUsers}
             searchKey="fullName"
             searchPlaceholder="Search users..."
+            toolbar={
+              <Select value={roleFilter} onValueChange={setRoleFilter}>
+                <SelectTrigger
+                  aria-label="Filter by role"
+                  className="h-10 w-full rounded-xl sm:w-44"
+                >
+                  <SelectValue placeholder="All roles" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All roles</SelectItem>
+                  {roleOptions.map((role) => (
+                    <SelectItem key={role.id} value={String(role.id)}>
+                      {role.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            }
           />
         </CardContent>
       </Card>

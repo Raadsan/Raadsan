@@ -36,15 +36,18 @@ export async function getPartnerById(req, res) {
 
 export async function createPartner(req, res) {
   try {
-    const { title, image, order } = req.body;
-    if (!title || !image) {
-      return res.status(400).json({ message: "title and image are required" });
+    const { title, image, imageDark, order } = req.body;
+    if (!title || !image || !imageDark) {
+      return res.status(400).json({
+        message: "title, light image, and dark image are required",
+      });
     }
 
     const partner = await prisma.partner.create({
       data: {
         title: String(title).trim(),
         image: String(image).trim(),
+        imageDark: String(imageDark).trim(),
         order: order !== undefined ? Number(order) || 0 : 0,
       },
     });
@@ -62,10 +65,14 @@ export async function updatePartner(req, res) {
     const id = parseId(req.params.id);
     if (!id) return res.status(400).json({ message: "Invalid partner id" });
 
-    const { title, image, order } = req.body;
+    const { title, image, imageDark, order } = req.body;
     const data = {};
     if (title !== undefined) data.title = String(title).trim();
     if (image !== undefined) data.image = String(image).trim();
+    if (imageDark !== undefined) {
+      const dark = String(imageDark).trim();
+      data.imageDark = dark || null;
+    }
     if (order !== undefined) data.order = Number(order) || 0;
 
     if (Object.keys(data).length === 0) {

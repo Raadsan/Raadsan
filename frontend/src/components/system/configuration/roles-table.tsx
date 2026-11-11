@@ -49,6 +49,7 @@ export function RolesTable() {
 
   const [open, setOpen] = useState(false)
   const [editingId, setEditingId] = useState<number | null>(null)
+  const [baseline, setBaseline] = useState<FormState>(emptyForm)
   const [form, setForm] = useState<FormState>(emptyForm)
 
   const { data: roles = [], isLoading } = useQuery({
@@ -70,8 +71,13 @@ export function RolesTable() {
   })
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, payload }: { id: number; payload: FormState }) =>
-      rolesApi.update(id, { name: payload.name, description: payload.description || undefined }),
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: number
+      payload: { name?: string; description?: string | null }
+    }) => rolesApi.update(id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["roles"] })
       toast.success("Role updated successfully")
@@ -100,21 +106,35 @@ export function RolesTable() {
   }
 
   const openEdit = (role: Role) => {
+    const next = { name: role.name, description: role.description ?? "" }
     setEditingId(role.id)
-    setForm({ name: role.name, description: role.description ?? "" })
+    setForm(next)
+    setBaseline(next)
     setOpen(true)
   }
 
   const handleSave = () => {
-    if (!form.name.trim()) {
-      toast.error("Role name is required")
+    if (editingId == null) {
+      if (!form.name.trim()) {
+        toast.error("Role name is required")
+        return
+      }
+      createMutation.mutate(form)
       return
     }
-    if (editingId == null) {
-      createMutation.mutate(form)
-    } else {
-      updateMutation.mutate({ id: editingId, payload: form })
+
+    const payload: { name?: string; description?: string | null } = {}
+    if (form.name.trim() && form.name.trim() !== baseline.name.trim()) {
+      payload.name = form.name.trim()
     }
+    if ((form.description ?? "") !== (baseline.description ?? "")) {
+      payload.description = form.description.trim() || null
+    }
+    if (Object.keys(payload).length === 0) {
+      toast.error("No changes to save")
+      return
+    }
+    updateMutation.mutate({ id: editingId, payload })
   }
 
   const isSaving = createMutation.isPending || updateMutation.isPending

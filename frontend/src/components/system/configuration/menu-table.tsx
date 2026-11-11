@@ -64,6 +64,27 @@ const emptyForm: FormState = {
   parentId: "none",
 }
 
+function menuPayload(form: FormState, level: MenuLevel): MenuPayload {
+  return {
+    title: form.title.trim(),
+    url: form.url.trim() || null,
+    icon: form.icon.trim() || null,
+    order: Number(form.order) || 0,
+    parentId:
+      level === "level1" || form.parentId === "none" ? null : Number(form.parentId),
+  }
+}
+
+function changedMenuFields(next: MenuPayload, previous: MenuPayload) {
+  const partial: Partial<MenuPayload> = {}
+  for (const key of Object.keys(next) as (keyof MenuPayload)[]) {
+    if (JSON.stringify(next[key]) !== JSON.stringify(previous[key])) {
+      partial[key] = next[key]
+    }
+  }
+  return partial
+}
+
 export type FlattenedMenuItem = MenuItem & {
   depth: number
   pathTitle: string
@@ -99,6 +120,8 @@ export function MenuTable() {
 
   const [open, setOpen] = useState(false)
   const [editingId, setEditingId] = useState<number | null>(null)
+  const [baseline, setBaseline] = useState<FormState>(emptyForm)
+  const [baselineLevel, setBaselineLevel] = useState<MenuLevel>("level1")
   const [form, setForm] = useState<FormState>(emptyForm)
   const [levelFilter, setLevelFilter] = useState<"all" | "level1" | "level2" | "level3">("all")
 
@@ -126,7 +149,7 @@ export function MenuTable() {
   })
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, payload }: { id: number; payload: MenuPayload }) =>
+    mutationFn: ({ id, payload }: { id: number; payload: Partial<MenuPayload> }) =>
       menuApi.update(id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["menus"] })
@@ -238,52 +261,53 @@ export function MenuTable() {
   }
 
   const openEdit = (item: FlattenedMenuItem) => {
-    setEditingId(item.id)
-    if (item.depth === 0) {
-      setSelectedLevel("level1")
-    } else if (item.depth === 1) {
-      setSelectedLevel("level2")
-    } else {
-      setSelectedLevel("level3")
-    }
-    setForm({
+    const level: MenuLevel =
+      item.depth === 0 ? "level1" : item.depth === 1 ? "level2" : "level3"
+    const next: FormState = {
       title: item.title,
       url: item.url ?? "",
       icon: item.icon ?? "",
       order: String(item.order ?? 0),
       parentId: item.parentId ? String(item.parentId) : "none",
-    })
+    }
+    setEditingId(item.id)
+    setSelectedLevel(level)
+    setBaselineLevel(level)
+    setForm(next)
+    setBaseline(next)
     setOpen(true)
   }
 
   const handleSave = () => {
-    if (!form.title.trim()) {
-      toast.error("Menu title is required")
-      return
-    }
-
-    if (selectedLevel !== "level1" && form.parentId === "none") {
-      toast.error(
-        `Please select a parent menu for this ${
-          selectedLevel === "level2" ? "Level 2 submenu" : "Level 3 sub-item"
-        }`,
-      )
-      return
-    }
-
-    const payload: MenuPayload = {
-      title: form.title.trim(),
-      url: form.url.trim() || null,
-      icon: form.icon.trim() || null,
-      order: Number(form.order) || 0,
-      parentId: selectedLevel === "level1" || form.parentId === "none" ? null : Number(form.parentId),
-    }
-
     if (editingId == null) {
-      createMutation.mutate(payload)
-    } else {
-      updateMutation.mutate({ id: editingId, payload })
+      if (!form.title.trim()) {
+        toast.error("Menu title is required")
+        return
+      }
+      if (selectedLevel !== "level1" && form.parentId === "none") {
+        toast.error(
+          `Please select a parent menu for this ${
+            selectedLevel === "level2" ? "Level 2 submenu" : "Level 3 sub-item"
+          }`,
+        )
+        return
+      }
+      createMutation.mutate(menuPayload(form, selectedLevel))
+      return
     }
+
+    const partial = changedMenuFields(
+      menuPayload(form, selectedLevel),
+      menuPayload(baseline, baselineLevel),
+    )
+    if (partial.title !== undefined && !String(partial.title).trim()) {
+      delete partial.title
+    }
+    if (Object.keys(partial).length === 0) {
+      toast.error("No changes to save")
+      return
+    }
+    updateMutation.mutate({ id: editingId, payload: partial })
   }
 
   const isSaving = createMutation.isPending || updateMutation.isPending

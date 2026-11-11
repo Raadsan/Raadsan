@@ -183,6 +183,20 @@ function defaultToForm(row: CrudRow, fields: CrudField[]) {
   )
 }
 
+function changedFields(
+  next: Record<string, unknown>,
+  previous: Record<string, unknown>,
+) {
+  const partial: Record<string, unknown> = {}
+  const keys = new Set([...Object.keys(next), ...Object.keys(previous)])
+  for (const key of keys) {
+    if (JSON.stringify(next[key]) !== JSON.stringify(previous[key])) {
+      partial[key] = next[key]
+    }
+  }
+  return partial
+}
+
 function defaultToPayload(form: Record<string, string>, fields: CrudField[]) {
   return Object.fromEntries(
     fields.map((field) => {
@@ -228,6 +242,7 @@ export function HomeApiCrudTable({
   const [viewOpen, setViewOpen] = useState(false)
   const [viewing, setViewing] = useState<CrudRow | null>(null)
   const [editingId, setEditingId] = useState<number | null>(null)
+  const [baseline, setBaseline] = useState<Record<string, string>>({})
   const [form, setForm] = useState<Record<string, string>>(() =>
     Object.fromEntries(fields.map((field) => [field.key, ""])),
   )
@@ -276,15 +291,21 @@ export function HomeApiCrudTable({
     onError: (err: Error) => toast.error(err.message),
   })
 
+  const buildPayload = (source: Record<string, string>) =>
+    toPayload ? toPayload(source) : defaultToPayload(source, fields)
+
   const openCreate = () => {
     setEditingId(null)
+    setBaseline({})
     setForm(Object.fromEntries(fields.map((field) => [field.key, ""])))
     setOpen(true)
   }
 
   const openEdit = (row: CrudRow) => {
+    const next = toForm ? toForm(row) : defaultToForm(row, fields)
     setEditingId(row.id)
-    setForm(toForm ? toForm(row) : defaultToForm(row, fields))
+    setForm(next)
+    setBaseline(next)
     setOpen(true)
   }
 
@@ -302,23 +323,29 @@ export function HomeApiCrudTable({
   }
 
   const handleSave = () => {
-    const payload = toPayload
-      ? toPayload(form)
-      : defaultToPayload(form, fields)
+    const payload = buildPayload(form)
 
-    const missing = fields.some((field) => {
-      if (field.required === false) return false
-      if (field.type === "checkbox" || field.type === "list") return false
-      const value = payload[field.key]
-      return value === "" || value == null
-    })
-    if (missing) {
-      toast.error("Please fill required fields")
+    if (editingId == null) {
+      const missing = fields.some((field) => {
+        if (field.required === false) return false
+        if (field.type === "checkbox" || field.type === "list") return false
+        const value = payload[field.key]
+        return value === "" || value == null
+      })
+      if (missing) {
+        toast.error("Please fill required fields")
+        return
+      }
+      createMutation.mutate(payload)
       return
     }
 
-    if (editingId == null) createMutation.mutate(payload)
-    else updateMutation.mutate({ id: editingId, payload })
+    const partial = changedFields(payload, buildPayload(baseline))
+    if (Object.keys(partial).length === 0) {
+      toast.error("No changes to save")
+      return
+    }
+    updateMutation.mutate({ id: editingId, payload: partial })
   }
 
   const saving = createMutation.isPending || updateMutation.isPending
