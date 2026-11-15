@@ -71,7 +71,7 @@ export function UsersTable() {
   const [baseline, setBaseline] = useState<FormState>(emptyForm)
   const [form, setForm] = useState<FormState>(emptyForm)
 
-  const { data: users = [], isLoading } = useQuery({
+  const { data: users = [], isLoading } = useQuery<User[]>({
     queryKey: ["users"],
     queryFn: usersApi.getAll,
   })

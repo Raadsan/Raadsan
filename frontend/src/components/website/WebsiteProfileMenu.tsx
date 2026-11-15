@@ -67,7 +67,6 @@ export function WebsiteProfileMenu({
       <DropdownMenuContent
         align="end"
         sideOffset={10}
-        onOpenAutoFocus={(event) => event.preventDefault()}
         onCloseAutoFocus={(event) => event.preventDefault()}
         className="min-w-56 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-1 text-[var(--foreground)] shadow-lg data-[state=open]:animate-none data-[state=closed]:animate-none"
       >

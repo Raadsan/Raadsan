@@ -75,13 +75,13 @@ function menuPayload(form: FormState, level: MenuLevel): MenuPayload {
   }
 }
 
-function changedMenuFields(next: MenuPayload, previous: MenuPayload) {
+function changedMenuFields(next: MenuPayload, previous: MenuPayload): Partial<MenuPayload> {
   const partial: Partial<MenuPayload> = {}
-  for (const key of Object.keys(next) as (keyof MenuPayload)[]) {
-    if (JSON.stringify(next[key]) !== JSON.stringify(previous[key])) {
-      partial[key] = next[key]
-    }
-  }
+  if (next.title !== previous.title) partial.title = next.title
+  if (next.url !== previous.url) partial.url = next.url
+  if (next.icon !== previous.icon) partial.icon = next.icon
+  if (next.order !== previous.order) partial.order = next.order
+  if (next.parentId !== previous.parentId) partial.parentId = next.parentId
   return partial
 }
 
@@ -126,8 +126,8 @@ export function MenuTable() {
   const [levelFilter, setLevelFilter] = useState<"all" | "level1" | "level2" | "level3">("all")
 
   const { data: menuTree = [], isLoading } = useQuery({
-    queryKey: ["menus", "tree"],
-    queryFn: menuApi.getTree,
+    queryKey: ["menus", "tree", "admin"],
+    queryFn: () => menuApi.getTree(),
   })
 
   const { data: flatMenus = [] } = useQuery({

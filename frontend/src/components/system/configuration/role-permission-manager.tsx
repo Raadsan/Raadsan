@@ -133,8 +133,8 @@ export function RolePermissionManager() {
 
   // 2. Fetch all menus in hierarchical tree
   const { data: menuTree = [] } = useQuery({
-    queryKey: ["menus", "tree"],
-    queryFn: menuApi.getTree,
+    queryKey: ["menus", "tree", "admin"],
+    queryFn: () => menuApi.getTree(),
   })
 
   const flattenedMenus = useMemo(() => {
