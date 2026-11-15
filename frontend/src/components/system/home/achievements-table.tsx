@@ -30,8 +30,11 @@ export function AchievementsTable({ title, description }: Props) {
           key: "icon",
           label: "Icon",
           half: true,
+          required: false,
           placeholder: "users | trophy | award | briefcase | check | star",
         },
+        { key: "image", label: "Light mode image", type: "image" },
+        { key: "imageDark", label: "Dark mode image", type: "image" },
       ]}
     />
   )

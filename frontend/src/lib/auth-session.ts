@@ -1,6 +1,21 @@
 const KEY = "auth_user"
 const TOKEN_KEY = "token"
 
+/** Login lasts only while this browser window is open. */
+function browserSession(): Storage | null {
+  if (typeof window === "undefined") return null
+  return window.sessionStorage
+}
+
+function dropPersistentLogin(): void {
+  try {
+    localStorage.removeItem(KEY)
+    localStorage.removeItem(TOKEN_KEY)
+  } catch {
+    // ignore
+  }
+}
+
 export type AuthUser = {
   id: number
   fullName: string
@@ -19,8 +34,10 @@ type LoginUserPayload = {
 
 export function setAuthToken(token: string): void {
   try {
-    if (typeof window === "undefined") return
-    localStorage.setItem(TOKEN_KEY, token)
+    const store = browserSession()
+    if (!store) return
+    dropPersistentLogin()
+    store.setItem(TOKEN_KEY, token)
   } catch {
     // storage unavailable
   }
@@ -28,8 +45,10 @@ export function setAuthToken(token: string): void {
 
 export function getAuthToken(): string | null {
   try {
-    if (typeof window === "undefined") return null
-    return localStorage.getItem(TOKEN_KEY)
+    const store = browserSession()
+    if (!store) return null
+    dropPersistentLogin()
+    return store.getItem(TOKEN_KEY)
   } catch {
     return null
   }
@@ -48,7 +67,8 @@ export function setAuthUserFromLogin(
       roleId: user.roleId,
       roleName: user.role.name,
     }
-    localStorage.setItem(KEY, JSON.stringify(entry))
+    dropPersistentLogin()
+    browserSession()?.setItem(KEY, JSON.stringify(entry))
     if (token) setAuthToken(token)
     window.dispatchEvent(new Event("raadsan-auth-change"))
   } catch {
@@ -58,8 +78,10 @@ export function setAuthUserFromLogin(
 
 export function getAuthUser(): AuthUser | null {
   try {
-    if (typeof window === "undefined") return null
-    const raw = localStorage.getItem(KEY)
+    const store = browserSession()
+    if (!store) return null
+    dropPersistentLogin()
+    const raw = store.getItem(KEY)
     if (!raw) return null
     return JSON.parse(raw) as AuthUser
   } catch {
@@ -69,9 +91,10 @@ export function getAuthUser(): AuthUser | null {
 
 export function clearAuthUser(): void {
   try {
-    if (typeof window === "undefined") return
-    localStorage.removeItem(KEY)
-    localStorage.removeItem(TOKEN_KEY)
+    dropPersistentLogin()
+    const store = browserSession()
+    store?.removeItem(KEY)
+    store?.removeItem(TOKEN_KEY)
     window.dispatchEvent(new Event("raadsan-auth-change"))
   } catch {
     // ignore

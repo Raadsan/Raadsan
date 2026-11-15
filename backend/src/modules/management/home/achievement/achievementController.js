@@ -63,11 +63,11 @@ export async function getAchievementBySlug(req, res) {
 
 export async function createAchievement(req, res) {
   try {
-    const { slug, count, label, icon, order } = req.body;
+    const { slug, count, label, icon, image, imageDark, order } = req.body;
 
-    if (!slug || count === undefined || count === null || !label || !icon) {
+    if (!slug || count === undefined || count === null || !label || !image || !imageDark) {
       return res.status(400).json({
-        message: "slug, count, label, and icon are required",
+        message: "slug, count, label, light image, and dark image are required",
       });
     }
 
@@ -81,7 +81,9 @@ export async function createAchievement(req, res) {
         slug: String(slug).trim(),
         count: countValue,
         label: String(label).trim(),
-        icon: String(icon).trim(),
+        icon: icon ? String(icon).trim() : "",
+        image: String(image).trim(),
+        imageDark: String(imageDark).trim(),
         order: order !== undefined ? Number(order) || 0 : 0,
       },
     });
@@ -105,13 +107,21 @@ export async function updateAchievement(req, res) {
       return res.status(400).json({ message: "Invalid achievement id" });
     }
 
-    const { slug, count, label, icon, order } = req.body;
+    const { slug, count, label, icon, image, imageDark, order } = req.body;
     const data = {};
 
     if (slug !== undefined) data.slug = String(slug).trim();
     if (count !== undefined) data.count = String(count).trim();
     if (label !== undefined) data.label = String(label).trim();
     if (icon !== undefined) data.icon = String(icon).trim();
+    if (image !== undefined) {
+      const light = String(image).trim();
+      data.image = light || null;
+    }
+    if (imageDark !== undefined) {
+      const dark = String(imageDark).trim();
+      data.imageDark = dark || null;
+    }
     if (order !== undefined) data.order = Number(order) || 0;
 
     if (Object.keys(data).length === 0) {

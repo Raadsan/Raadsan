@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, type ComponentType } from "react"
+import { useEffect, useRef, useState, type ComponentType } from "react"
 import { useQuery } from "@tanstack/react-query"
 import {
   animate,
@@ -119,6 +119,8 @@ type ApiAchievement = {
   count: string
   label: string
   icon: string
+  image?: string | null
+  imageDark?: string | null
 }
 
 function parseMetric(count: string) {
@@ -152,12 +154,24 @@ function CountUp({ value, suffix }: { value: number; suffix: string }) {
 }
 
 export default function AchievementsSection() {
+  const [isDark, setIsDark] = useState(false)
   const { data = [], isLoading } = useQuery({
     queryKey: ["public-achievements"],
     queryFn: () => achievementsApi.getAll(),
   })
 
   const achievements = data as ApiAchievement[]
+
+  useEffect(() => {
+    const root = document.documentElement
+    const syncTheme = () => setIsDark(root.classList.contains("dark"))
+
+    syncTheme()
+    const observer = new MutationObserver(syncTheme)
+    observer.observe(root, { attributes: true, attributeFilter: ["class"] })
+
+    return () => observer.disconnect()
+  }, [])
 
   return (
     <section
@@ -193,9 +207,12 @@ export default function AchievementsSection() {
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:gap-8 lg:grid-cols-4">
             {achievements.map((item, index) => {
               const metric = parseMetric(item.count)
-              const isImage = isImagePath(item.icon)
+              const themedImage =
+                isDark && item.imageDark ? item.imageDark : item.image
+              const imageSrc = themedImage ? mediaUrl(themedImage) : null
+              const isImage = !imageSrc && isImagePath(item.icon)
               const iconSrc = isImage ? mediaUrl(item.icon) : null
-              const Icon = !isImage ? resolveAchievementIcon(item.icon) : null
+              const Icon = !imageSrc && !isImage ? resolveAchievementIcon(item.icon) : null
               return (
                 <motion.div
                   key={item.id}
@@ -205,7 +222,14 @@ export default function AchievementsSection() {
                   transition={{ duration: 0.4, delay: index * 0.08 }}
                   className="group flex flex-col items-center justify-center text-center"
                 >
-                  {isImage && iconSrc ? (
+                  {imageSrc ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={imageSrc}
+                      alt=""
+                      className="mb-5 h-14 w-14 object-contain transition-transform duration-300 group-hover:scale-110"
+                    />
+                  ) : isImage && iconSrc ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={iconSrc}
