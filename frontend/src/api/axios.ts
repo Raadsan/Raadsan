@@ -1,9 +1,9 @@
 import axios from "axios"
 
 import { getAuthToken } from "@/lib/auth-session"
+import { getApiBaseUrl } from "@/lib/api-base-url"
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8006",
   headers: {
     "Content-Type": "application/json",
   },
@@ -12,6 +12,8 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
+    config.baseURL = getApiBaseUrl()
+
     if (typeof window !== "undefined") {
       const token = getAuthToken()
       if (token) {

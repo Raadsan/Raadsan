@@ -1,9 +1,10 @@
 import api from "@/api/axios"
+import { getApiBaseUrl } from "@/lib/api-base-url"
 
 export function mediaUrl(path?: string | null) {
   if (!path) return ""
   if (/^https?:\/\//i.test(path)) return path
-  const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8006"
+  const base = getApiBaseUrl()
   return `${base}${path.startsWith("/") ? "" : "/"}${path}`
 }
 

@@ -1,5 +1,6 @@
 import cors from "cors"
 import express from "express"
+import { getCorsOptions } from "../config/cors.js"
 import { prisma } from "../lib/prisma.js"
 import serviceRouter from "./management/home/services/serviceRoute.js"
 import hostingRouter from "./management/home/web-hosting/hostingRoute.js"
@@ -26,12 +27,7 @@ import dashboardRouter from "./management/dashboard/dashboardRoute.js"
 
 const app = express()
 
-app.use(
-  cors({
-    origin: ["http://localhost:3000"],
-    credentials: true,
-  }),
-)
+app.use(cors(getCorsOptions()))
 app.use(express.json())
 
 app.get("/", (_req, res) => {
