@@ -12,8 +12,13 @@ function envApiUrl(): string | null {
 
 /**
  * API origin for axios and media URLs.
- * On a public host (e.g. 167.86.104.132), uses same host + port 8006
- * even if the build still has NEXT_PUBLIC_API_URL=localhost.
+ *
+ * - On a public hostname that is NOT a raw IP (i.e. a domain like raadsantech.so),
+ *   return "" (empty string = same origin) so requests go through the
+ *   Next.js /api/* rewrite proxy — avoids port / HTTPS mismatches.
+ * - On a raw-IP public host (e.g. 167.86.104.132), hit port 8006 directly
+ *   as before, since the IP can reach the backend without a proxy.
+ * - On localhost, use env or fallback to http://localhost:8006.
  */
 export function getApiBaseUrl(): string {
   const fromEnv = envApiUrl()
@@ -21,7 +26,15 @@ export function getApiBaseUrl(): string {
 
   if (typeof window !== "undefined") {
     const { protocol, hostname } = window.location
+
     if (!isLocalHostname(hostname)) {
+      // Domain (e.g. raadsantech.so) → proxy through Next.js rewrites
+      const isIP = /^\d{1,3}(\.\d{1,3}){3}$/.test(hostname)
+      if (!isIP) {
+        return "" // same origin — Next.js proxies /api/* to backend
+      }
+
+      // Raw IP — call backend port directly
       if (fromEnv) {
         try {
           if (!isLocalHostname(new URL(fromEnv).hostname)) return fromEnv
